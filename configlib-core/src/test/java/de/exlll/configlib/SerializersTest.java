@@ -1043,4 +1043,43 @@ class SerializersTest {
         assertThat(serializer.context, sameInstance(ctx));
     }
 
+    static class A {}
+
+    @Configuration
+    static class B {
+        int i;
+    }
+
+    record R(int i) {}
+
+    @Test
+    void newSerializerForTypeRequiresValidArguments() {
+        final var props = ConfigurationProperties.newBuilder().build();
+
+        assertThrowsNullPointerException(
+                () -> Serializers.newConfigurationTypeSerializer(null, props),
+                "configuration type"
+        );
+        assertThrowsNullPointerException(
+                () -> Serializers.newConfigurationTypeSerializer(B.class, null),
+                "configuration properties"
+        );
+        assertThrowsConfigurationException(
+                () -> Serializers.newConfigurationTypeSerializer(A.class, props),
+                "Class 'A' must be a configuration or record."
+        );
+    }
+
+    @Test
+    void newConfigurationTypeSerializerReturnsTypeSerializerInstance() {
+        final var props = ConfigurationProperties.newBuilder().build();
+        assertThat(
+                Serializers.newConfigurationTypeSerializer(B.class, props),
+                instanceOf(TypeSerializer.class)
+        );
+        assertThat(
+                Serializers.newConfigurationTypeSerializer(R.class, props),
+                instanceOf(TypeSerializer.class)
+        );
+    }
 }
