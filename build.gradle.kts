@@ -1,4 +1,4 @@
 allprojects {
     group = "de.exlll"
-    version = "4.6.4"
+    version = "4.7.0"
 }
