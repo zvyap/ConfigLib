@@ -8,6 +8,7 @@ import de.exlll.configlib.configurations.ExampleInitializer;
 import org.junit.jupiter.api.Test;
 
 import java.awt.Point;
+import java.io.File;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -137,25 +138,25 @@ class ConfigurationSerializerTest {
 
     @Configuration
     private static final class B3 {
-        String s = "";
-        List<List<String>> l = List.of();
+        File file;
+        List<List<File>> files;
     }
 
     @Test
     void deserializeInvalidType() {
         ConfigurationSerializer<B3> serializer = newSerializer(B3.class);
         assertThrowsConfigurationException(
-                () -> serializer.deserialize(Map.of("s", (byte) 3)),
+                () -> serializer.deserialize(Map.of("file", (byte) 3)),
                 "Deserialization of value '3' with type 'class java.lang.Byte' for field " +
-                "'java.lang.String de.exlll.configlib.ConfigurationSerializerTest$B3.s' " +
+                "'java.io.File de.exlll.configlib.ConfigurationSerializerTest$B3.file' " +
                 "failed.\nThe type of the object to be deserialized does not match the type " +
                 "the deserializer expects."
         );
         assertThrowsConfigurationException(
-                () -> serializer.deserialize(Map.of("l", List.of(List.of(3)))),
+                () -> serializer.deserialize(Map.of("files", List.of(List.of(3)))),
                 "Deserialization of value '[[3]]' with type 'class " +
                 "java.util.ImmutableCollections$List12' for field 'java.util.List " +
-                "de.exlll.configlib.ConfigurationSerializerTest$B3.l' failed.\n" +
+                "de.exlll.configlib.ConfigurationSerializerTest$B3.files' failed.\n" +
                 "The type of the object to be deserialized does not match the type the " +
                 "deserializer expects."
         );

@@ -7,10 +7,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.RecordComponent;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
@@ -279,7 +276,10 @@ sealed abstract class TypeSerializer<T, E extends ConfigurationElement<?>>
         if (list.isEmpty())
             return UnaryOperator.identity();
         if (list.size() > 1) {
-            String methodNames = String.join("\n  ", list.stream().map(Method::toString).toList());
+            String methodNames = String.join(
+                    "\n  ",
+                    list.stream().map(Method::toString).sorted().toList()
+            );
             String msg = "Configuration types must not define more than one method for " +
                          "post-processing but type '%s' defines %d:\n  %s"
                                  .formatted(type, list.size(), methodNames);

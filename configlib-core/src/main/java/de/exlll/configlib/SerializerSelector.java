@@ -20,7 +20,7 @@ import java.util.UUID;
 import static de.exlll.configlib.Validator.requireNonNull;
 
 final class SerializerSelector {
-    private static final Map<Class<?>, Serializer<?, ?>> DEFAULT_SERIALIZERS = Map.ofEntries(
+    private static final Map<Class<?>, Serializer<?, ?>> STATIC_DEFAULT_SERIALIZERS = Map.ofEntries(
             Map.entry(boolean.class, new BooleanSerializer()),
             Map.entry(Boolean.class, new BooleanSerializer()),
             Map.entry(byte.class, new NumberSerializer(byte.class)),
@@ -37,7 +37,6 @@ final class SerializerSelector {
             Map.entry(Double.class, new NumberSerializer(Double.class)),
             Map.entry(char.class, new CharacterSerializer()),
             Map.entry(Character.class, new CharacterSerializer()),
-            Map.entry(String.class, new StringSerializer()),
             Map.entry(BigInteger.class, new BigIntegerSerializer()),
             Map.entry(BigDecimal.class, new BigDecimalSerializer()),
             Map.entry(LocalDate.class, new LocalDateSerializer()),
@@ -51,6 +50,8 @@ final class SerializerSelector {
             Map.entry(URI.class, new UriSerializer())
     );
     private final ConfigurationProperties properties;
+    private final Map<Class<?>, Serializer<?, ?>> configurableDefaultSerializers;
+
     /**
      * Holds the last {@link #select}ed configuration element.
      */
@@ -66,6 +67,10 @@ final class SerializerSelector {
 
     public SerializerSelector(ConfigurationProperties properties) {
         this.properties = requireNonNull(properties, "configuration properties");
+        this.configurableDefaultSerializers = Map.of(
+                String.class,
+                new StringCoercingSerializer(properties.getDeserializationCoercionTypes())
+        );
     }
 
     public Serializer<?, ?> select(ConfigurationElement<?> element) {
@@ -186,8 +191,10 @@ final class SerializerSelector {
 
     private Serializer<?, ?> selectForClass(AnnotatedType annotatedType) {
         final Class<?> cls = (Class<?>) annotatedType.getType();
-        if (DEFAULT_SERIALIZERS.containsKey(cls))
-            return DEFAULT_SERIALIZERS.get(cls);
+        if (STATIC_DEFAULT_SERIALIZERS.containsKey(cls))
+            return STATIC_DEFAULT_SERIALIZERS.get(cls);
+        if (configurableDefaultSerializers.containsKey(cls))
+            return configurableDefaultSerializers.get(cls);
         if (Reflect.isEnumType(cls)) {
             // The following cast won't fail because we just checked that it's an enum.
             @SuppressWarnings("unchecked")
@@ -249,7 +256,8 @@ final class SerializerSelector {
                     : new SetSerializer<>(elementSerializer, outputNulls, inputNulls);
         } else if (Reflect.isMapType(rawType)) {
             if ((typeArgs[0].getType() instanceof Class<?> cls) &&
-                (DEFAULT_SERIALIZERS.containsKey(cls) ||
+                (STATIC_DEFAULT_SERIALIZERS.containsKey(cls) ||
+                 configurableDefaultSerializers.containsKey(cls) ||
                  Reflect.isEnumType(cls))) {
                 var keySerializer = selectForClass(typeArgs[0]);
                 var valSerializer = selectForType(typeArgs[1]);

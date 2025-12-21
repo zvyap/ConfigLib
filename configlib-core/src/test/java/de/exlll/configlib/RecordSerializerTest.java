@@ -4,6 +4,7 @@ import de.exlll.configlib.ConfigurationElements.RecordComponentElement;
 import org.junit.jupiter.api.Test;
 
 import java.awt.Point;
+import java.io.File;
 import java.lang.reflect.RecordComponent;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -194,20 +195,20 @@ class RecordSerializerTest {
 
     @Test
     void deserializeInvalidType() {
-        record B3(String s, List<List<String>> l) {}
+        record B3(File file, List<List<File>> files) {}
         RecordSerializer<B3> serializer = newSerializer(B3.class);
         assertThrowsConfigurationException(
-                () -> serializer.deserialize(Map.of("s", (byte) 3)),
+                () -> serializer.deserialize(Map.of("file", (byte) 3)),
                 "Deserialization of value '3' with type 'class java.lang.Byte' for component " +
-                "'java.lang.String s' of record 'class de.exlll.configlib.RecordSerializerTest$1B3' " +
+                "'java.io.File file' of record 'class de.exlll.configlib.RecordSerializerTest$1B3' " +
                 "failed.\nThe type of the object to be deserialized does not match the type " +
                 "the deserializer expects."
         );
         assertThrowsConfigurationException(
-                () -> serializer.deserialize(Map.of("l", List.of(List.of(3)))),
+                () -> serializer.deserialize(Map.of("files", List.of(List.of(3)))),
                 "Deserialization of value '[[3]]' with type " +
                 "'class java.util.ImmutableCollections$List12' for component " +
-                "'java.util.List l' of record 'class de.exlll.configlib.RecordSerializerTest$1B3' " +
+                "'java.util.List files' of record 'class de.exlll.configlib.RecordSerializerTest$1B3' " +
                 "failed.\nThe type of the object to be deserialized does not match the type " +
                 "the deserializer expects."
         );

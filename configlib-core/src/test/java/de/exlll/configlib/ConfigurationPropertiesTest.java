@@ -1,12 +1,13 @@
 package de.exlll.configlib;
 
 import de.exlll.configlib.ConfigurationProperties.EnvVarResolutionConfiguration;
-import de.exlll.configlib.Serializers.StringSerializer;
+import de.exlll.configlib.Serializers.BooleanSerializer;
 import de.exlll.configlib.TestUtils.PointSerializer;
 import org.junit.jupiter.api.Test;
 
 import java.awt.Point;
 import java.lang.reflect.Type;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
@@ -35,6 +36,7 @@ class ConfigurationPropertiesTest {
             .outputNulls(true)
             .inputNulls(true)
             .setEnvVarResolutionConfiguration(ENV_VAR_CONFIG)
+            .setDeserializationCoercionTypes(DeserializationCoercionType.values())
             .serializeSetsAsLists(false);
 
     @Test
@@ -53,6 +55,7 @@ class ConfigurationPropertiesTest {
                 properties.getEnvVarResolutionConfiguration(),
                 is(EnvVarResolutionConfiguration.disabled())
         );
+        assertThat(properties.getDeserializationCoercionTypes(), empty());
     }
 
     @Test
@@ -77,7 +80,10 @@ class ConfigurationPropertiesTest {
         assertThat(properties.getNameFormatter(), sameInstance(FORMATTER));
         assertThat(properties.getFieldFilter(), sameInstance(FILTER));
         assertThat(properties.getEnvVarResolutionConfiguration(), sameInstance(ENV_VAR_CONFIG));
-
+        assertThat(
+                properties.getDeserializationCoercionTypes(),
+                is(EnumSet.allOf(DeserializationCoercionType.class))
+        );
         var factories = properties.getSerializerFactories();
         assertThat(factories.size(), is(1));
         assertThat(factories.get(Point.class).apply(null), is(SERIALIZER));
@@ -115,6 +121,19 @@ class ConfigurationPropertiesTest {
         );
     }
 
+    @Test
+    void builderDeserializerCoercionTypesUnmodifiable() {
+        ConfigurationProperties properties = ConfigurationProperties.newBuilder().build();
+
+        var deserializationCoercionTypes = properties.getDeserializationCoercionTypes();
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> deserializationCoercionTypes.add(
+                        DeserializationCoercionType.COLLECTION_TO_STRING
+                )
+        );
+    }
+
     public static final class BuilderTest {
         private static final ConfigurationProperties.Builder<?> builder =
                 ConfigurationProperties.newBuilder();
@@ -138,7 +157,7 @@ class ConfigurationPropertiesTest {
         @Test
         void addSerializerByTypeRequiresNonNull() {
             assertThrowsNullPointerException(
-                    () -> builder.addSerializer(null, new StringSerializer()),
+                    () -> builder.addSerializer(null, new BooleanSerializer()),
                     "serialized type"
             );
 
@@ -151,7 +170,7 @@ class ConfigurationPropertiesTest {
         @Test
         void addSerializerFactoryByTypeRequiresNonNull() {
             assertThrowsNullPointerException(
-                    () -> builder.addSerializerFactory(null, ignored -> new StringSerializer()),
+                    () -> builder.addSerializerFactory(null, ignored -> new BooleanSerializer()),
                     "serialized type"
             );
 
@@ -164,7 +183,7 @@ class ConfigurationPropertiesTest {
         @Test
         void addSerializerByConditionRequiresNonNull() {
             assertThrowsNullPointerException(
-                    () -> builder.addSerializerByCondition(null, new StringSerializer()),
+                    () -> builder.addSerializerByCondition(null, new BooleanSerializer()),
                     "condition"
             );
 
@@ -194,6 +213,19 @@ class ConfigurationPropertiesTest {
                     "environment variable resolution configuration"
             );
         }
+
+        @Test
+        void setDeserializationCoercionTypesRequiresNonNull() {
+            assertThrowsNullPointerException(
+                    () -> builder.setDeserializationCoercionTypes((DeserializationCoercionType[]) null),
+                    "deserialization coercion types"
+            );
+            assertThrowsNullPointerException(
+                    () -> builder.setDeserializationCoercionTypes((DeserializationCoercionType) null),
+                    "deserialization coercion type"
+            );
+        }
+
     }
 
     public static final class EnvVarResolutionConfigurationTest {
