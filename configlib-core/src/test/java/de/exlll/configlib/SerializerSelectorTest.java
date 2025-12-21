@@ -84,7 +84,7 @@ class SerializerSelectorTest {
     @Test
     void selectSerializerString() {
         Serializer<?, ?> serializer = SELECTOR.select(findByType(String.class));
-        assertThat(serializer, instanceOf(StringSerializer.class));
+        assertThat(serializer, instanceOf(StringCoercingSerializer.class));
     }
 
     @Test
@@ -166,7 +166,7 @@ class SerializerSelectorTest {
 
         var elementSerializer = (ArraySerializer<?, ?>) serializer.getElementSerializer();
         assertThat(elementSerializer.getComponentType(), equalTo(String.class));
-        assertThat(elementSerializer.getElementSerializer(), instanceOf(StringSerializer.class));
+        assertThat(elementSerializer.getElementSerializer(), instanceOf(StringCoercingSerializer.class));
     }
 
     @Test
@@ -359,7 +359,7 @@ class SerializerSelectorTest {
     @Test
     void selectSerializerList() {
         var serializer = (ListSerializer<?, ?>) SELECTOR.select(findByName("a2_listString"));
-        assertThat(serializer.getElementSerializer(), instanceOf(StringSerializer.class));
+        assertThat(serializer.getElementSerializer(), instanceOf(StringCoercingSerializer.class));
     }
 
     @Test
@@ -379,19 +379,19 @@ class SerializerSelectorTest {
                 ConfigurationProperties.newBuilder().serializeSetsAsLists(false).build()
         );
         var serializer = (SetSerializer<?, ?>) selector.select(findByName("a2_setString"));
-        assertThat(serializer.getElementSerializer(), instanceOf(StringSerializer.class));
+        assertThat(serializer.getElementSerializer(), instanceOf(StringCoercingSerializer.class));
     }
 
     @Test
     void selectSerializerSetsAsLists() {
         var serializer = (SetAsListSerializer<?, ?>) SELECTOR.select(findByName("a2_setString"));
-        assertThat(serializer.getElementSerializer(), instanceOf(StringSerializer.class));
+        assertThat(serializer.getElementSerializer(), instanceOf(StringCoercingSerializer.class));
     }
 
     @Test
     void selectSerializerMap() {
         var serializer = (MapSerializer<?, ?, ?, ?>) SELECTOR_POINT.select(findByName("a2_mapStringR1"));
-        var stringSerializer = (StringSerializer) serializer.getKeySerializer();
+        var stringSerializer = (StringCoercingSerializer) serializer.getKeySerializer();
         var recordSerializer = (RecordSerializer<?>) serializer.getValueSerializer();
         assertThat(recordSerializer.getRecordType(), equalTo(ExampleRecord1.class));
     }
@@ -599,7 +599,7 @@ class SerializerSelectorTest {
         void selectCustomSerializerForMapsWithNesting2() {
             var serializer1 = (MapSerializer<?, ?, ?, ?>) SELECTOR.select(fieldAsElement(Z.class, "map3"));
             var serializer2 = (MapSerializer<?, ?, ?, ?>) serializer1.getValueSerializer();
-            assertThat(serializer2.getKeySerializer(), instanceOf(StringSerializer.class));
+            assertThat(serializer2.getKeySerializer(), instanceOf(StringCoercingSerializer.class));
             assertThat(serializer2.getValueSerializer(), instanceOf(IdentitySerializer.class));
         }
 
@@ -634,11 +634,11 @@ class SerializerSelectorTest {
                 @SerializeWith(serializer = IdentitySerializer.class, nesting = 2)
                 List<String> list;
             }
-            assertThat(SELECTOR.select(fieldAsElement(A.class, "s1")), instanceOf(StringSerializer.class));
+            assertThat(SELECTOR.select(fieldAsElement(A.class, "s1")), instanceOf(StringCoercingSerializer.class));
             assertThat(SELECTOR.select(fieldAsElement(A.class, "s2")), instanceOf(IdentitySerializer.class));
-            assertThat(SELECTOR.select(fieldAsElement(A.class, "s3")), instanceOf(StringSerializer.class));
+            assertThat(SELECTOR.select(fieldAsElement(A.class, "s3")), instanceOf(StringCoercingSerializer.class));
             var serializer = (ListSerializer<?, ?>) SELECTOR.select(fieldAsElement(A.class, "list"));
-            assertThat(serializer.getElementSerializer(), instanceOf(StringSerializer.class));
+            assertThat(serializer.getElementSerializer(), instanceOf(StringCoercingSerializer.class));
         }
 
         @Test

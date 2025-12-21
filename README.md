@@ -817,6 +817,34 @@ constructor with one parameter of type `SerializerContext`. If such a
 constructor exists, a context object is passed to it when the serializer is
 instantiated by this library.
 
+### Type coercion
+
+When deserializing the value for a configuration element, it can happen (e.g.
+due to misconfiguration) that the value the deserializer receives is of the
+wrong type. For example, it can happen that the configuration element is of type
+`String` but the value the deserializer receives is of type `Number` because
+someone forgot to wrap the value in quotes `"` in the configuration file. In
+such cases, an exception is thrown.
+However, if these misconfigurations are excepted to happen often, or you simply
+prefer the validation logic of this library to be less strict, you can configure
+this library to perform several conversions of normally incompatible types
+automatically.
+
+By default, this library converts all number types into one another (e.g. `long`
+to `double`, etc.) and this cannot be disabled. All other conversions are off by
+default and must be allowed explicitly by configuring a `ConfigurationProperties`
+object.
+
+```java
+YamlConfigurationProperties.newBuilder()
+        // enable specific type coercions (varargs argument):
+        .setDeserializationCoercionTypes(BOOLEAN_TO_STRING, NUMBER_TO_STRING)
+        // or, if you want to enable all type coercions
+        //  (taking the risk that there might be added more in the future):
+        .setDeserializationCoercionTypes(DeserializationCoercionType.values())
+        .build();
+```
+
 ### Post-processing
 
 There are two ways to apply some post-processing to your configurations:

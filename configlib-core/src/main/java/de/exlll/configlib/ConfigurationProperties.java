@@ -20,6 +20,7 @@ public class ConfigurationProperties {
             serializersByCondition;
     private final Map<Predicate<? super ConfigurationElement<?>>, UnaryOperator<?>>
             postProcessorsByCondition;
+    private final Set<DeserializationCoercionType> deserializationCoercionTypes;
     private final NameFormatter formatter;
     private final FieldFilter filter;
     private final boolean outputNulls;
@@ -41,6 +42,9 @@ public class ConfigurationProperties {
         );
         this.postProcessorsByCondition = Collections.unmodifiableMap(
                 new LinkedHashMap<>(builder.postProcessorsByCondition)
+        );
+        this.deserializationCoercionTypes = Collections.unmodifiableSet(
+                builder.deserializationCoercionTypes
         );
         this.formatter = requireNonNull(builder.formatter, "name formatter");
         this.filter = requireNonNull(builder.filter, "field filter");
@@ -97,6 +101,8 @@ public class ConfigurationProperties {
                 serializersByCondition = new LinkedHashMap<>();
         private final Map<Predicate<? super ConfigurationElement<?>>, UnaryOperator<?>>
                 postProcessorsByCondition = new LinkedHashMap<>();
+        private final Set<DeserializationCoercionType> deserializationCoercionTypes =
+                EnumSet.noneOf(DeserializationCoercionType.class);
         private NameFormatter formatter = NameFormatters.IDENTITY;
         private FieldFilter filter = FieldFilters.DEFAULT;
         private boolean outputNulls = false;
@@ -119,6 +125,7 @@ public class ConfigurationProperties {
             this.serializerFactoriesByType.putAll(properties.serializerFactoriesByType);
             this.serializersByCondition.putAll(properties.serializersByCondition);
             this.postProcessorsByCondition.putAll(properties.postProcessorsByCondition);
+            this.deserializationCoercionTypes.addAll(properties.deserializationCoercionTypes);
             this.formatter = properties.formatter;
             this.filter = properties.filter;
             this.outputNulls = properties.outputNulls;
@@ -318,6 +325,27 @@ public class ConfigurationProperties {
                     configuration,
                     "environment variable resolution configuration"
             );
+            return getThis();
+        }
+
+        /**
+         * Sets which types of coercions should be allowed during deserialization.
+         * <p>
+         * By default, no type coercions are enabled (except for type coercions
+         * between number types, which cannot be disabled).
+         *
+         * @param types the types of coercions to enable
+         * @return this builder
+         * @throws NullPointerException if {@code types} or any of its values is null
+         */
+        public final B setDeserializationCoercionTypes(
+                DeserializationCoercionType... types
+        ) {
+            requireNonNull(types, "deserialization coercion types");
+            for (var type : types)
+                requireNonNull(type, "deserialization coercion type");
+            this.deserializationCoercionTypes.clear();
+            this.deserializationCoercionTypes.addAll(Arrays.asList(types));
             return getThis();
         }
 
@@ -525,6 +553,15 @@ public class ConfigurationProperties {
     public final Map<Predicate<? super ConfigurationElement<?>>, UnaryOperator<?>>
     getPostProcessorsByCondition() {
         return postProcessorsByCondition;
+    }
+
+    /**
+     * Returns an unmodifiable map of deserialization coercion types.
+     *
+     * @return deserialization coercion types
+     */
+    public final Set<DeserializationCoercionType> getDeserializationCoercionTypes() {
+        return deserializationCoercionTypes;
     }
 
     /**

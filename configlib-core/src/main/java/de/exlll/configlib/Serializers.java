@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import static de.exlll.configlib.DeserializationCoercionType.*;
 import static de.exlll.configlib.Validator.requireConfigurationType;
 import static de.exlll.configlib.Validator.requireNonNull;
 
@@ -34,8 +35,10 @@ public final class Serializers {
      * <p>
      * The serializer returned by this method respects most configuration properties of
      * the given properties object. The following properties are ignored:
-     * - All properties of subclasses of the configuration properties object
-     * - Properties affecting environment variable resolution
+     * <ul>
+     * <li>All properties of subclasses of the configuration properties object</li>
+     * <li>Properties affecting environment variable resolution</li>
+     * </ul>
      *
      * @param configurationType the type of configurations the newly created serializer
      *                          can convert
@@ -193,15 +196,77 @@ public final class Serializers {
         }
     }
 
-    static final class StringSerializer implements Serializer<String, String> {
+    static final class StringCoercingSerializer implements Serializer<String, Object> {
+        private final Set<DeserializationCoercionType> deserializationCoercionTypes;
+
+        public StringCoercingSerializer(
+                Set<DeserializationCoercionType> deserializationCoercionTypes
+        ) {
+            this.deserializationCoercionTypes = deserializationCoercionTypes;
+        }
+
         @Override
         public String serialize(String element) {
             return element;
         }
 
         @Override
-        public String deserialize(String element) {
-            return element;
+        public String deserialize(Object element) {
+            if (element == null) return null;
+            if (element instanceof String string) return string;
+
+            if (element instanceof Boolean bool) {
+                return coerceOrThrow("Boolean", bool, BOOLEAN_TO_STRING);
+            }
+
+            if (element instanceof Number number) {
+                return coerceOrThrow("Number", number, NUMBER_TO_STRING);
+            }
+
+            if (element instanceof Collection<?> collection) {
+                return coerceOrThrow("Collection", collection, COLLECTION_TO_STRING);
+            }
+
+            if (element instanceof Map<?, ?> map) {
+                return coerceOrThrow("Map", map, COLLECTION_TO_STRING);
+            }
+
+            return coerceOrThrow(
+                    element.getClass().getSimpleName(),
+                    element,
+                    OBJECT_TO_STRING
+            );
+        }
+
+        private String coerceOrThrow(
+                String sourceTypeName,
+                Object value,
+                DeserializationCoercionType coercionType
+        ) {
+            if (deserializationCoercionTypes.contains(coercionType))
+                return value.toString();
+            final String exceptionMessage = buildExceptionMessage(
+                    sourceTypeName,
+                    value,
+                    coercionType
+            );
+            throw new ConfigurationException(exceptionMessage);
+        }
+
+        private static String buildExceptionMessage(
+                String sourceTypeName,
+                Object value,
+                DeserializationCoercionType coercionType
+        ) {
+            return ("%s '%s' cannot be deserialized to type String because %s-to-string coercion " +
+                    "has not been configured. If you want to allow this type of coercion, add the " +
+                    "deserialization coercion type '%s' via a ConfigurationProperties object.")
+                    .formatted(
+                            sourceTypeName,
+                            value,
+                            sourceTypeName.toLowerCase(),
+                            coercionType
+                    );
         }
     }
 

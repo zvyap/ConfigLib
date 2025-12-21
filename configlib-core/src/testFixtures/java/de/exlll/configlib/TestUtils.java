@@ -1,5 +1,6 @@
 package de.exlll.configlib;
 
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.function.Executable;
 
@@ -57,6 +58,14 @@ public final class TestUtils {
             String expectedExceptionMessage
     ) {
         assertThrowsException(ConfigurationException.class, executable, expectedExceptionMessage);
+    }
+
+    public static void assertThrowsConfigurationException(
+            Executable executable,
+            Matcher<String> matcher
+    ) {
+        final var exception = assertThrows(ConfigurationException.class, executable);
+        assertThat(exception.getMessage(), matcher);
     }
 
     public static void assertThrowsRuntimeException(

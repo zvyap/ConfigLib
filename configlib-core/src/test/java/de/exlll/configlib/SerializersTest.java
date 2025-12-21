@@ -19,10 +19,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.time.*;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static de.exlll.configlib.TestUtils.*;
 import static java.util.Arrays.asList;
@@ -30,10 +27,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 class SerializersTest {
-
-    private final String TMP_CONFIG_PATH = createPlatformSpecificFilePath("/tmp/config.yml");
-    private final String TMP_WITH_UNDERSCORE_PATH = createPlatformSpecificFilePath("/tmp/with_underscore.yml");
-    private final String TMP_PATH = createPlatformSpecificFilePath("/tmp");
+    private static final String TMP_CONFIG_PATH =
+            createPlatformSpecificFilePath("/tmp/config.yml");
+    private static final String TMP_WITH_UNDERSCORE_PATH =
+            createPlatformSpecificFilePath("/tmp/with_underscore.yml");
+    private static final String TMP_PATH =
+            createPlatformSpecificFilePath("/tmp");
 
     @Test
     void booleanSerializer() {
@@ -331,16 +330,6 @@ class SerializersTest {
         assertThat(pinfFloat, is(positiveInfinity));
         assertThat(ninfFloat, is(negativeInfinity));
         assertThat(nanFloat, is(nan));
-    }
-
-    @Test
-    void stringSerializer() {
-        Serializer<String, String> serializer = new Serializers.StringSerializer();
-
-        String random = "RANDOM";
-
-        assertThat(serializer.serialize(random), sameInstance(random));
-        assertThat(serializer.deserialize(random), sameInstance(random));
     }
 
     @Test
@@ -1081,5 +1070,217 @@ class SerializersTest {
                 Serializers.newConfigurationTypeSerializer(R.class, props),
                 instanceOf(TypeSerializer.class)
         );
+    }
+
+
+    public static final class StringCoercingSerializerTest {
+        private static Serializer<String, Object> newStringCoercingSerializer(
+                DeserializationCoercionType... types
+        ) {
+            return new Serializers.StringCoercingSerializer(Set.of(types));
+        }
+
+        @Test
+        void serializeStringReturnsSameInstance() {
+            final var serializer = newStringCoercingSerializer();
+
+            String value = "ABCDE";
+            assertThat(serializer.serialize(value), sameInstance(value));
+        }
+
+        @Test
+        void deserializeStringReturnsSameInstance() {
+            final var serializer = newStringCoercingSerializer();
+
+            String value = "ABCDE";
+            assertThat(serializer.deserialize(value), sameInstance(value));
+        }
+
+        @Test
+        void deserializeNullReturnsNull() {
+            final var serializer = newStringCoercingSerializer();
+            assertThat(serializer.deserialize(null), nullValue());
+        }
+
+        private static String buildExceptionMessage(
+                String sourceTypeName,
+                String value,
+                String deserializationCoercingType
+        ) {
+            return """
+                   %s '%s' cannot be deserialized to type String because %s-to-string \
+                   coercion has not been configured. If you want to allow this type of coercion, \
+                   add the deserialization coercion type '%s' via a ConfigurationProperties object.\
+                   """.formatted(sourceTypeName, value, sourceTypeName.toLowerCase(), deserializationCoercingType);
+        }
+
+        @Test
+        void deserializeThrowsForBooleansIfBooleanToStringDeserializationTypeNotAdded() {
+            final var serializer = newStringCoercingSerializer();
+
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(true),
+                    buildExceptionMessage("Boolean", "true", "BOOLEAN_TO_STRING")
+            );
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(false),
+                    buildExceptionMessage("Boolean", "false", "BOOLEAN_TO_STRING")
+            );
+        }
+
+        @Test
+        void deserializeThrowsForNumbersIfNumberToStringDeserializationTypeNotAdded() {
+            final var serializer = newStringCoercingSerializer();
+
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize((byte) 1),
+                    buildExceptionMessage("Number", "1", "NUMBER_TO_STRING")
+            );
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(Byte.valueOf("2")),
+                    buildExceptionMessage("Number", "2", "NUMBER_TO_STRING")
+            );
+
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize((short) 3),
+                    buildExceptionMessage("Number", "3", "NUMBER_TO_STRING")
+            );
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(Short.valueOf("4")),
+                    buildExceptionMessage("Number", "4", "NUMBER_TO_STRING")
+            );
+
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(5),
+                    buildExceptionMessage("Number", "5", "NUMBER_TO_STRING")
+            );
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(Integer.valueOf("6")),
+                    buildExceptionMessage("Number", "6", "NUMBER_TO_STRING")
+            );
+
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize((long) 7),
+                    buildExceptionMessage("Number", "7", "NUMBER_TO_STRING")
+            );
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(Long.valueOf("8")),
+                    buildExceptionMessage("Number", "8", "NUMBER_TO_STRING")
+            );
+
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize((float) 9),
+                    buildExceptionMessage("Number", "9.0", "NUMBER_TO_STRING")
+            );
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(Float.valueOf("10.0")),
+                    buildExceptionMessage("Number", "10.0", "NUMBER_TO_STRING")
+            );
+
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(11.0),
+                    buildExceptionMessage("Number", "11.0", "NUMBER_TO_STRING")
+            );
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(Double.valueOf("12.0")),
+                    buildExceptionMessage("Number", "12.0", "NUMBER_TO_STRING")
+            );
+        }
+
+        @Test
+        void deserializeThrowsForCollectionsIfCollectionToStringDeserializationTypeNotAdded() {
+            final var serializer = newStringCoercingSerializer();
+
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(Collections.emptyList()),
+                    buildExceptionMessage("Collection", "[]", "COLLECTION_TO_STRING")
+            );
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(asList(1, 2, 3)),
+                    buildExceptionMessage("Collection", "[1, 2, 3]", "COLLECTION_TO_STRING")
+            );
+
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(Collections.emptySet()),
+                    buildExceptionMessage("Collection", "[]", "COLLECTION_TO_STRING")
+            );
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(asSet(4, 5, 6)),
+                    buildExceptionMessage("Collection", "[4, 5, 6]", "COLLECTION_TO_STRING")
+            );
+        }
+
+        @Test
+        void deserializeThrowsForObjectsIfObjectToStringDeserializationTypeNotAdded() {
+            final var serializer = newStringCoercingSerializer();
+
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(new File(TMP_CONFIG_PATH)),
+                    buildExceptionMessage("File", "/tmp/config.yml", "OBJECT_TO_STRING")
+            );
+            assertThrowsConfigurationException(
+                    () -> serializer.deserialize(URI.create("https://example.com")),
+                    buildExceptionMessage("URI", "https://example.com", "OBJECT_TO_STRING")
+            );
+        }
+
+        @Test
+        void deserializeBooleanToStringIfDeserializationTypeAdded() {
+            final var serializer = newStringCoercingSerializer(
+                    DeserializationCoercionType.BOOLEAN_TO_STRING
+            );
+
+            assertThat(serializer.deserialize(true), is("true"));
+            assertThat(serializer.deserialize(false), is("false"));
+        }
+
+        @Test
+        void deserializeNumberToStringIfDeserializationTypeAdded() {
+            final var serializer = newStringCoercingSerializer(
+                    DeserializationCoercionType.NUMBER_TO_STRING
+            );
+
+            assertThat(serializer.deserialize((byte) 1), is("1"));
+            assertThat(serializer.deserialize(Byte.valueOf("2")), is("2"));
+            assertThat(serializer.deserialize((short) 3), is("3"));
+            assertThat(serializer.deserialize(Short.valueOf("4")), is("4"));
+            assertThat(serializer.deserialize(5), is("5"));
+            assertThat(serializer.deserialize(Integer.valueOf("6")), is("6"));
+            assertThat(serializer.deserialize((long) 7), is("7"));
+            assertThat(serializer.deserialize(Long.valueOf("8")), is("8"));
+            assertThat(serializer.deserialize((float) 9), is("9.0"));
+            assertThat(serializer.deserialize(Float.valueOf("10.0")), is("10.0"));
+            assertThat(serializer.deserialize(11.0), is("11.0"));
+            assertThat(serializer.deserialize(Double.valueOf("12.0")), is("12.0"));
+        }
+
+        @Test
+        void deserializeCollectionToStringIfDeserializationTypeAdded() {
+            final var serializer = newStringCoercingSerializer(
+                    DeserializationCoercionType.COLLECTION_TO_STRING
+            );
+
+            assertThat(serializer.deserialize(Collections.emptyList()), is("[]"));
+            assertThat(serializer.deserialize(asList(1, 2, 3)), is("[1, 2, 3]"));
+
+            assertThat(serializer.deserialize(Collections.emptySet()), is("[]"));
+            assertThat(serializer.deserialize(asSet(4, 5, 6)), is("[4, 5, 6]"));
+        }
+
+        @Test
+        void deserializeObjectToStringIfDeserializationTypeAdded() {
+            final var serializer = newStringCoercingSerializer(
+                    DeserializationCoercionType.OBJECT_TO_STRING
+            );
+
+            assertThat(
+                    serializer.deserialize(new File(TMP_CONFIG_PATH)),
+                    is("/tmp/config.yml")
+            );
+            assertThat(
+                    serializer.deserialize(URI.create("https://example.com")),
+                    is("https://example.com")
+            );
+        }
     }
 }

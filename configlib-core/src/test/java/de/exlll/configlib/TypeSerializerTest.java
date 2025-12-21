@@ -55,7 +55,7 @@ class TypeSerializerTest {
                 .buildSerializerMap();
         assertThat(serializers.get("a2_primBool"), instanceOf(BooleanSerializer.class));
         assertThat(serializers.get("a2_refChar"), instanceOf(CharacterSerializer.class));
-        assertThat(serializers.get("a2_string"), instanceOf(StringSerializer.class));
+        assertThat(serializers.get("a2_string"), instanceOf(StringCoercingSerializer.class));
         assertThat(serializers.get("a2_Enm"), instanceOf(EnumSerializer.class));
 
         ConfigurationSerializer<?> serializerB1 =
@@ -81,7 +81,7 @@ class TypeSerializerTest {
         );
 
         assertThat(serializerList.getElementSerializer(), instanceOf(NumberSerializer.class));
-        assertThat(serializerArray.getElementSerializer(), instanceOf(StringSerializer.class));
+        assertThat(serializerArray.getElementSerializer(), instanceOf(StringCoercingSerializer.class));
         assertThat(serializerSet.getElementSerializer(), instanceOf(BigIntegerSerializer.class));
         assertThat(serializerMap.getKeySerializer(), instanceOf(LocalTimeSerializer.class));
         assertThat(serializerMap.getValueSerializer(), instanceOf(LocalTimeSerializer.class));
@@ -110,7 +110,7 @@ class TypeSerializerTest {
                 .buildSerializerMap();
         assertThat(serializers.get("primBool"), instanceOf(BooleanSerializer.class));
         assertThat(serializers.get("refChar"), instanceOf(CharacterSerializer.class));
-        assertThat(serializers.get("string"), instanceOf(StringSerializer.class));
+        assertThat(serializers.get("string"), instanceOf(StringCoercingSerializer.class));
         assertThat(serializers.get("enm"), instanceOf(EnumSerializer.class));
 
         ConfigurationSerializer<?> serializerB1 =
@@ -136,7 +136,7 @@ class TypeSerializerTest {
         );
 
         assertThat(serializerList.getElementSerializer(), instanceOf(NumberSerializer.class));
-        assertThat(serializerArray.getElementSerializer(), instanceOf(StringSerializer.class));
+        assertThat(serializerArray.getElementSerializer(), instanceOf(StringCoercingSerializer.class));
         assertThat(serializerSet.getElementSerializer(), instanceOf(BigIntegerSerializer.class));
         assertThat(serializerMap.getKeySerializer(), instanceOf(UuidSerializer.class));
         assertThat(serializerMap.getValueSerializer(), instanceOf(UuidSerializer.class));
