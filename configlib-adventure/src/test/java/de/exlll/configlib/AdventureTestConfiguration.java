@@ -11,7 +11,6 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Configuration
 public class AdventureTestConfiguration {

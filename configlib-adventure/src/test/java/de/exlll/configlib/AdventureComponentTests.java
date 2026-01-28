@@ -12,7 +12,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static de.exlll.configlib.TestUtils.createPlatformSpecificFilePath;
