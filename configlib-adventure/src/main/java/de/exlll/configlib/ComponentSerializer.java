@@ -9,15 +9,30 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Serializer for Adventure {@link Component} objects.
+ * Supports multiple formats including MiniMessage, legacy, and JSON.
+ */
 public final class ComponentSerializer implements Serializer<Component, String> {
     private final List<ComponentFormat> serializeOrder;
     private final List<ComponentFormat> deserializeOrder;
 
+    /**
+     * Creates a new ComponentSerializer with separate format orders for serialization and deserialization.
+     *
+     * @param serializeOrder   the order of formats to try when serializing
+     * @param deserializeOrder the order of formats to try when deserializing
+     */
     public ComponentSerializer(List<ComponentFormat> serializeOrder, List<ComponentFormat> deserializeOrder) {
-        this.serializeOrder = List.copyOf(serializeOrder);
+        this.serializeOrder  = List.copyOf(serializeOrder);
         this.deserializeOrder = List.copyOf(deserializeOrder);
     }
 
+    /**
+     * Creates a new ComponentSerializer using the same format order for both serialization and deserialization.
+     *
+     * @param formats the formats to use, in order of preference
+     */
     public ComponentSerializer(ComponentFormat... formats) {
         this(Arrays.asList(formats), Arrays.asList(formats));
     }

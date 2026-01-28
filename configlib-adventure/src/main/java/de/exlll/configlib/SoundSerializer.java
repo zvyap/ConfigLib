@@ -5,19 +5,30 @@ import net.kyori.adventure.sound.Sound;
 
 /**
  * Serializer for {@link Sound} objects.
- * String format: <sound_id>:[pitch]:[volume]:[source]
- * Example: "minecraft:entity.player.levelup:1.0:1.0:MASTER"
- *
+ * <p>
+ * String format: {@code <sound_id> [pitch] [volume] [source]}
+ * <p>
+ * Example: {@code "minecraft:entity.player.levelup 1.0 1.0 MASTER"}
  */
 public final class SoundSerializer implements Serializer<Sound, String> {
+    /** The delimiter used to separate sound components in the serialized string. */
     public static final String DELIMINATOR = " ";
 
     private final Sound.Source defaultSource;
 
+    /**
+     * Creates a new SoundSerializer with the default source set to
+     * {@link Sound.Source#MASTER}.
+     */
     public SoundSerializer() {
         this.defaultSource = Sound.Source.MASTER;
     }
 
+    /**
+     * Creates a new SoundSerializer with the specified default source.
+     *
+     * @param defaultSource the default sound source to use when deserializing
+     */
     public SoundSerializer(Sound.Source defaultSource) {
         this.defaultSource = defaultSource;
     }

@@ -4,18 +4,32 @@ import net.kyori.adventure.key.Key;
 
 import java.util.OptionalInt;
 
+/**
+ * Serializer for Adventure {@link Key} objects.
+ */
 public final class KeySerializer implements Serializer<Key, String> {
 
     private final String defaultNamespace;
 
+    /**
+     * Creates a new KeySerializer with the specified default namespace.
+     *
+     * @param defaultNamespace the default namespace to use when deserializing keys
+     *                         without a namespace
+     * @throws IllegalArgumentException if the namespace is invalid
+     */
     public KeySerializer(String defaultNamespace) {
         this.defaultNamespace = defaultNamespace;
         OptionalInt result = Key.checkNamespace(defaultNamespace);
-        if(result.isPresent()) {
-            throw new IllegalArgumentException("Invalid namespace at index " + result.getAsInt() + ": " + defaultNamespace);
+        if (result.isPresent()) {
+            throw new IllegalArgumentException(
+                    "Invalid namespace at index " + result.getAsInt() + ": " + defaultNamespace);
         }
     }
 
+    /**
+     * Creates a new KeySerializer using Adventure's default namespace (minecraft).
+     */
     public KeySerializer() {
         this.defaultNamespace = null; // Use Adventure's default namespace
     }
@@ -27,7 +41,7 @@ public final class KeySerializer implements Serializer<Key, String> {
 
     @Override
     public Key deserialize(String element) {
-        if(this.defaultNamespace == null) {
+        if (this.defaultNamespace == null) {
             return Key.key(element);
         }
 

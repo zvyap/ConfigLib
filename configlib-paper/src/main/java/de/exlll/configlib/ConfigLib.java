@@ -16,6 +16,14 @@ public final class ConfigLib extends JavaPlugin {
      * {@code toBuilder()} method of this object.
      */
     public static final YamlConfigurationProperties BUKKIT_DEFAULT_PROPERTIES = initializeBukkitDefaultProperties();
+
+    /**
+     * A {@code YamlConfigurationProperties} object design for Paper software, it provides native support for Adventure library,
+     * serializers classes like {@link  ItemStack} and other {@link ConfigurationSerializable} types.
+     * <p>
+     * You can configure these properties further by creating a new builder using the
+     * {@code toBuilder()} method of this object.
+     */
     public static final YamlConfigurationProperties PAPER_DEFAULT_PROPERTIES = initializePaperDefaultProperties();
 
     private static YamlConfigurationProperties initializeBukkitDefaultProperties() {
@@ -28,7 +36,7 @@ public final class ConfigLib extends JavaPlugin {
                 .build();
     }
 
-    public static YamlConfigurationProperties.Builder<?> builder() {
+    private static YamlConfigurationProperties.Builder<?> builder() {
         var builder = YamlConfigurationProperties.newBuilder();
         return builder
                 .addSerializerByCondition(
