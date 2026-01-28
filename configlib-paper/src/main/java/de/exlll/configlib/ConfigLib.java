@@ -9,13 +9,10 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public final class ConfigLib extends JavaPlugin {
     /**
-     * A {@code YamlConfigurationProperties} object that provides serializers for
-     * several Bukkit
-     * classes like {@link ItemStack} and other {@link ConfigurationSerializable}
-     * types.
+     * A {@code YamlConfigurationProperties} object that provides serializers for several Bukkit
+     * classes like {@link  ItemStack} and other {@link ConfigurationSerializable} types.
      * <p>
-     * You can configure these properties further by creating a new builder using
-     * the
+     * You can configure these properties further by creating a new builder using the
      * {@code toBuilder()} method of this object.
      */
     public static final YamlConfigurationProperties BUKKIT_DEFAULT_PROPERTIES = initializeBukkitDefaultProperties();
