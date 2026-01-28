@@ -357,6 +357,11 @@ public final class TestUtils {
         return String.format("C:%s", path.replace("/", File.separator));
     }
 
+    public static boolean isWindows() {
+        final String platform = System.getProperty("os.name");
+        return platform.contains("Windows");
+    }
+
     public static List<String> createListOfPlatformSpecificFilePaths(String... paths) {
         return Stream.of(paths).map(TestUtils::createPlatformSpecificFilePath).toList();
     }
