@@ -43,6 +43,7 @@ class KeySerializerTest {
         KeySerializer serializer = new KeySerializer("default");
         // Key.key("default", "namespace:value") will throw InvalidKeyException because
         // ':' is not allowed in value
-        assertThrows(InvalidKeyException.class, () -> serializer.deserialize("namespace:value"));
+        assertThrows(InvalidKeyException.class, () ->
+                serializer.deserialize("namespace:value"));
     }
 }

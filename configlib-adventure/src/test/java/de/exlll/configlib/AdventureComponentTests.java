@@ -51,9 +51,11 @@ class AdventureComponentTests {
     }
 
     private void runTestWithOrder(List<ComponentFormat> deserializeOrder) {
-        YamlConfigurationProperties.Builder<?> builder = YamlConfigurationProperties.newBuilder();
+        YamlConfigurationProperties.Builder<?> builder = YamlConfigurationProperties
+                .newBuilder();
         // Set a fixed serialize order, we are testing deserialization.
-        AdventureConfigLib.addDefaults(builder, List.of(ComponentFormat.MINI_MESSAGE), deserializeOrder);
+        AdventureConfigLib.addDefaults(builder,
+                List.of(ComponentFormat.MINI_MESSAGE), deserializeOrder);
         YamlConfigurationProperties properties = builder.build();
 
         YamlConfigurationStore<MixedConfiguration> store = new YamlConfigurationStore<>(
@@ -111,7 +113,8 @@ class AdventureComponentTests {
         }
         E firstElement = original.get(0);
         List<List<E>> returnValue = new ArrayList<>();
-        List<List<E>> permutations = generatePermutations(original.subList(1, original.size()));
+        List<List<E>> permutations = generatePermutations(
+                original.subList(1, original.size()));
         for (List<E> smallerPermutated : permutations) {
             for (int index = 0; index <= smallerPermutated.size(); index++) {
                 List<E> temp = new ArrayList<>(smallerPermutated);

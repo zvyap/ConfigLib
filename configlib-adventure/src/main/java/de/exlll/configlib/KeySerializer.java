@@ -23,7 +23,8 @@ public final class KeySerializer implements Serializer<Key, String> {
         OptionalInt result = Key.checkNamespace(defaultNamespace);
         if (result.isPresent()) {
             throw new IllegalArgumentException(
-                    "Invalid namespace at index " + result.getAsInt() + ": " + defaultNamespace);
+                    "Invalid namespace at index " + result.getAsInt() + ": "
+                            + defaultNamespace);
         }
     }
 

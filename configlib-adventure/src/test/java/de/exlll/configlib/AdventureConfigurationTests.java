@@ -37,7 +37,8 @@ class AdventureConfigurationTests {
     // Test to make sure data is consistent after serialization and deserialization
     @Test
     void testSerializationAndDeserializationDefaults() {
-        YamlConfigurationProperties.Builder<?> builder = YamlConfigurationProperties.newBuilder();
+        YamlConfigurationProperties.Builder<?> builder = YamlConfigurationProperties
+                .newBuilder();
         AdventureConfigLib.addDefaults(builder);
         YamlConfigurationProperties properties = builder.build();
 
@@ -52,36 +53,77 @@ class AdventureConfigurationTests {
         assertConfigsEqual(original, loaded);
     }
 
-    private void assertConfigsEqual(AdventureTestConfiguration expected, AdventureTestConfiguration actual) {
+    private void assertConfigsEqual(AdventureTestConfiguration expected,
+                                    AdventureTestConfiguration actual) {
         assertNotNull(actual);
-        assertEquals(expected.simpleText, actual.simpleText, "Simple Text mismatch");
-        assertEquals(expected.coloredText, actual.coloredText, "Colored Text mismatch");
-        assertEquals(expected.decoratedText, actual.decoratedText, "Decorated Text mismatch");
-        assertEquals(expected.clickLink, actual.clickLink, "Click Link mismatch");
-        assertEquals(expected.hoverText, actual.hoverText, "Hover Text mismatch");
+        assertEquals(expected.simpleText,
+                actual.simpleText,
+                "Simple Text mismatch");
+        assertEquals(expected.coloredText,
+                actual.coloredText,
+                "Colored Text mismatch");
+        assertEquals(expected.decoratedText,
+                actual.decoratedText,
+                "Decorated Text mismatch");
+        assertEquals(expected.clickLink,
+                actual.clickLink,
+                "Click Link mismatch");
+        assertEquals(expected.hoverText,
+                actual.hoverText,
+                "Hover Text mismatch");
 
-        assertEquals(serialize(expected.gradientText), serialize(actual.gradientText), "Gradient Text mismatch");
-        assertEquals(serialize(expected.rainbowText), serialize(actual.rainbowText), "Rainbow Text mismatch");
-        assertEquals(serialize(expected.formattedText), serialize(actual.formattedText), "Formatted Text mismatch");
-        assertEquals(serialize(expected.clickText), serialize(actual.clickText), "Click Text mismatch");
-        assertEquals(serialize(expected.hoverTextComplex), serialize(actual.hoverTextComplex),
+        assertEquals(serialize(expected.gradientText),
+                serialize(actual.gradientText),
+                "Gradient Text mismatch");
+        assertEquals(serialize(expected.rainbowText),
+                serialize(actual.rainbowText),
+                "Rainbow Text mismatch");
+        assertEquals(serialize(expected.formattedText),
+                serialize(actual.formattedText),
+                "Formatted Text mismatch");
+        assertEquals(serialize(expected.clickText),
+                serialize(actual.clickText),
+                "Click Text mismatch");
+        assertEquals(serialize(expected.hoverTextComplex),
+                serialize(actual.hoverTextComplex),
                 "Hover Text Complex mismatch");
-        assertEquals(serialize(expected.keybindText), serialize(actual.keybindText), "Keybind Text (MM) mismatch");
-        assertEquals(serialize(expected.translatableText), serialize(actual.translatableText),
+        assertEquals(serialize(expected.keybindText),
+                serialize(actual.keybindText),
+                "Keybind Text (MM) mismatch");
+        assertEquals(serialize(expected.translatableText),
+                serialize(actual.translatableText),
                 "Translatable Text (MM) mismatch");
 
-        assertEquals(expected.translatable, actual.translatable, "Translatable mismatch");
-        assertEquals(expected.keybind, actual.keybind, "Keybind mismatch");
+        assertEquals(expected.translatable,
+                actual.translatable,
+                "Translatable mismatch");
+        assertEquals(expected.keybind,
+                actual.keybind,
+                "Keybind mismatch");
 
-        assertEquals(expected.simpleKey, actual.simpleKey, "Key mismatch");
+        assertEquals(expected.simpleKey,
+                actual.simpleKey,
+                "Key mismatch");
 
-        assertEquals(expected.simpleSound.name(), actual.simpleSound.name(), "Sound Name mismatch");
-        assertEquals(expected.simpleSound.source(), actual.simpleSound.source(), "Sound Source mismatch");
-        assertEquals(expected.simpleSound.volume(), actual.simpleSound.volume(), "Sound Volume mismatch");
-        assertEquals(expected.simpleSound.pitch(), actual.simpleSound.pitch(), "Sound Pitch mismatch");
+        assertEquals(expected.simpleSound.name(),
+                actual.simpleSound.name(),
+                "Sound Name mismatch");
+        assertEquals(expected.simpleSound.source(),
+                actual.simpleSound.source(),
+                "Sound Source mismatch");
+        assertEquals(expected.simpleSound.volume(),
+                actual.simpleSound.volume(),
+                "Sound Volume mismatch");
+        assertEquals(expected.simpleSound.pitch(),
+                actual.simpleSound.pitch(),
+                "Sound Pitch mismatch");
 
-        assertEquals(expected.componentList, actual.componentList, "List mismatch");
-        assertEquals(expected.componentMap, actual.componentMap, "Map mismatch");
+        assertEquals(expected.componentList,
+                actual.componentList,
+                "List mismatch");
+        assertEquals(expected.componentMap,
+                actual.componentMap,
+                "Map mismatch");
     }
 
     private String serialize(Component component) {

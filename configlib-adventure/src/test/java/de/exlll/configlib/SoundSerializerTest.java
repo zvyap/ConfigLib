@@ -33,7 +33,8 @@ class SoundSerializerTest {
 
     @Test
     void testDeserializeWithPitchAndVolume() {
-        String input = "minecraft:test" + SoundSerializer.DELIMINATOR + "0.5" + SoundSerializer.DELIMINATOR + "2.0";
+        String input = "minecraft:test" + SoundSerializer.DELIMINATOR + "0.5"
+                + SoundSerializer.DELIMINATOR + "2.0";
         Sound sound = serializer.deserialize(input);
 
         assertEquals(Key.key("minecraft", "test"), sound.name());
@@ -44,7 +45,8 @@ class SoundSerializerTest {
 
     @Test
     void testDeserializeFull() {
-        String input = "minecraft:test" + SoundSerializer.DELIMINATOR + "0.8" + SoundSerializer.DELIMINATOR + "0.5"
+        String input = "minecraft:test" + SoundSerializer.DELIMINATOR + "0.8"
+                + SoundSerializer.DELIMINATOR + "0.5"
                 + SoundSerializer.DELIMINATOR + "MUSIC";
         Sound sound = serializer.deserialize(input);
 
@@ -81,7 +83,8 @@ class SoundSerializerTest {
 
     @Test
     void testRoundTrip() {
-        Sound original = Sound.sound(Key.key("test:sound"), Sound.Source.AMBIENT, 0.5f, 1.2f);
+        Sound original = Sound.sound(
+                Key.key("test:sound"), Sound.Source.AMBIENT, 0.5f, 1.2f);
         String serialized = serializer.serialize(original);
         Sound deserialized = serializer.deserialize(serialized);
 

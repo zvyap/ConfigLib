@@ -2,7 +2,6 @@ package de.exlll.configlib;
 
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -18,7 +17,9 @@ import java.util.stream.Collectors;
  * Example: {@code "minecraft:entity.player.levelup 1.0 1.0 MASTER"}
  */
 public final class SoundSerializer implements Serializer<Sound, String> {
-    /** The delimiter used to separate sound components in the serialized string. */
+    /**
+     * The delimiter used to separate sound components in the serialized string.
+     */
     public static final String DELIMINATOR = " ";
 
     private static final Pattern SOUND_PATTERN = Pattern.compile(buildRegex());
