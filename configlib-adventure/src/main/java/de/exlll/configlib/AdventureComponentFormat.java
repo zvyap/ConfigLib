@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
  * Represents the different text formats supported for Adventure Component
  * serialization.
  */
-public enum ComponentFormat {
+public enum AdventureComponentFormat {
     /**
      * MiniMessage format with tags like {@code <red>} or {@code <bold>}.
      */
@@ -45,7 +45,7 @@ public enum ComponentFormat {
 
     private final Predicate<String> inputPredicate;
 
-    ComponentFormat(Predicate<String> inputPredicate) {
+    AdventureComponentFormat(Predicate<String> inputPredicate) {
         this.inputPredicate = inputPredicate;
     }
 

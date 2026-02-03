@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class SoundSerializerTest {
-    private final SoundSerializer serializer = new SoundSerializer();
+class AdventureSoundSerializerTest {
+    private final AdventureSoundSerializer serializer = new AdventureSoundSerializer();
 
     @Test
     void testDeserializeBasic() {
@@ -22,7 +22,7 @@ class SoundSerializerTest {
 
     @Test
     void testDeserializeWithPitch() {
-        String input = "minecraft:test" + SoundSerializer.DELIMINATOR + "1.5";
+        String input = "minecraft:test" + AdventureSoundSerializer.DELIMINATOR + "1.5";
         Sound sound = serializer.deserialize(input);
 
         assertEquals(Key.key("minecraft", "test"), sound.name());
@@ -33,8 +33,8 @@ class SoundSerializerTest {
 
     @Test
     void testDeserializeWithPitchAndVolume() {
-        String input = "minecraft:test" + SoundSerializer.DELIMINATOR + "0.5"
-                + SoundSerializer.DELIMINATOR + "2.0";
+        String input = "minecraft:test" + AdventureSoundSerializer.DELIMINATOR + "0.5"
+                + AdventureSoundSerializer.DELIMINATOR + "2.0";
         Sound sound = serializer.deserialize(input);
 
         assertEquals(Key.key("minecraft", "test"), sound.name());
@@ -45,9 +45,9 @@ class SoundSerializerTest {
 
     @Test
     void testDeserializeFull() {
-        String input = "minecraft:test" + SoundSerializer.DELIMINATOR + "0.8"
-                + SoundSerializer.DELIMINATOR + "0.5"
-                + SoundSerializer.DELIMINATOR + "MUSIC";
+        String input = "minecraft:test" + AdventureSoundSerializer.DELIMINATOR + "0.8"
+                + AdventureSoundSerializer.DELIMINATOR + "0.5"
+                + AdventureSoundSerializer.DELIMINATOR + "MUSIC";
         Sound sound = serializer.deserialize(input);
 
         assertEquals(Key.key("minecraft", "test"), sound.name());
@@ -58,7 +58,7 @@ class SoundSerializerTest {
 
     @Test
     void testDeserializeComplexKey() {
-        String input = "minecraft:complex.key.name" + SoundSerializer.DELIMINATOR + "1.2";
+        String input = "minecraft:complex.key.name" + AdventureSoundSerializer.DELIMINATOR + "1.2";
         Sound sound = serializer.deserialize(input);
 
         assertEquals(Key.key("minecraft", "complex.key.name"), sound.name());
@@ -67,7 +67,7 @@ class SoundSerializerTest {
 
     @Test
     void testDeserializeAmbiguousKeyLookingLikeFloat() {
-        String input = "custom" + SoundSerializer.DELIMINATOR + "1.5";
+        String input = "custom" + AdventureSoundSerializer.DELIMINATOR + "1.5";
         Sound sound = serializer.deserialize(input);
         assertEquals(Key.key("minecraft", "custom"), sound.name());
         assertEquals(1.5f, sound.pitch());
@@ -75,7 +75,7 @@ class SoundSerializerTest {
 
     @Test
     void testDeserializeAmbiguousKeyLookingLikeSource() {
-        String input = "custom" + SoundSerializer.DELIMINATOR + "MUSIC";
+        String input = "custom" + AdventureSoundSerializer.DELIMINATOR + "MUSIC";
         Sound sound = serializer.deserialize(input);
         assertEquals(Key.key("minecraft", "custom"), sound.name());
         assertEquals(Sound.Source.MUSIC, sound.source());

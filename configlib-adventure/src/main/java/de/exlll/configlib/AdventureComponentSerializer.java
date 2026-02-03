@@ -13,9 +13,9 @@ import java.util.List;
  * Serializer for Adventure {@link Component} objects.
  * Supports multiple formats including MiniMessage, legacy, and JSON.
  */
-public final class ComponentSerializer implements Serializer<Component, String> {
-    private final List<ComponentFormat> serializeOrder;
-    private final List<ComponentFormat> deserializeOrder;
+public final class AdventureComponentSerializer implements Serializer<Component, String> {
+    private final List<AdventureComponentFormat> serializeOrder;
+    private final List<AdventureComponentFormat> deserializeOrder;
 
     /**
      * Creates a new ComponentSerializer with separate format orders for
@@ -24,8 +24,8 @@ public final class ComponentSerializer implements Serializer<Component, String> 
      * @param serializeOrder   the order of formats to try when serializing
      * @param deserializeOrder the order of formats to try when deserializing
      */
-    public ComponentSerializer(List<ComponentFormat> serializeOrder,
-                               List<ComponentFormat> deserializeOrder) {
+    public AdventureComponentSerializer(List<AdventureComponentFormat> serializeOrder,
+                                        List<AdventureComponentFormat> deserializeOrder) {
         this.serializeOrder = List.copyOf(serializeOrder);
         this.deserializeOrder = List.copyOf(deserializeOrder);
     }
@@ -36,7 +36,7 @@ public final class ComponentSerializer implements Serializer<Component, String> 
      *
      * @param formats the formats to use, in order of preference
      */
-    public ComponentSerializer(ComponentFormat... formats) {
+    public AdventureComponentSerializer(AdventureComponentFormat... formats) {
         this(Arrays.asList(formats), Arrays.asList(formats));
     }
 
@@ -46,7 +46,7 @@ public final class ComponentSerializer implements Serializer<Component, String> 
             return null;
         }
 
-        for (ComponentFormat format : serializeOrder) {
+        for (AdventureComponentFormat format : serializeOrder) {
             return serialize(element, format);
         }
 
@@ -60,7 +60,7 @@ public final class ComponentSerializer implements Serializer<Component, String> 
             return null;
         }
 
-        for (ComponentFormat format : deserializeOrder) {
+        for (AdventureComponentFormat format : deserializeOrder) {
             if (!format.matches(element)) {
                 continue;
             }
@@ -72,7 +72,7 @@ public final class ComponentSerializer implements Serializer<Component, String> 
         return MiniMessage.miniMessage().deserialize(element);
     }
 
-    private String serialize(Component component, ComponentFormat format) {
+    private String serialize(Component component, AdventureComponentFormat format) {
         return switch (format) {
             case MINI_MESSAGE -> MiniMessage.miniMessage().serialize(component);
             case LEGACY_AMPERSAND ->
@@ -85,7 +85,7 @@ public final class ComponentSerializer implements Serializer<Component, String> 
         };
     }
 
-    private Component deserialize(String string, ComponentFormat format) {
+    private Component deserialize(String string, AdventureComponentFormat format) {
         return switch (format) {
             case MINI_MESSAGE -> MiniMessage.miniMessage().deserialize(string);
             case LEGACY_AMPERSAND ->

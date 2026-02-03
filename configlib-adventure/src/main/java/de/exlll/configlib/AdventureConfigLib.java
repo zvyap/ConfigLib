@@ -12,8 +12,8 @@ import java.util.List;
 public final class AdventureConfigLib {
     // Use MiniMessage as the default format since MiniMessage covered all
     // component type
-    private static final List<ComponentFormat> DEFAULT_FORMAT_ORDER = List.of(
-            ComponentFormat.MINI_MESSAGE
+    private static final List<AdventureComponentFormat> DEFAULT_FORMAT_ORDER = List.of(
+            AdventureComponentFormat.MINI_MESSAGE
     );
 
     private AdventureConfigLib() {
@@ -47,12 +47,12 @@ public final class AdventureConfigLib {
     public static <B extends ConfigurationProperties.Builder<B>>
         ConfigurationProperties.Builder<B> addDefaults(
             ConfigurationProperties.Builder<B> builder,
-            List<ComponentFormat> serializeOrder,
-            List<ComponentFormat> deserializeOrder) {
+            List<AdventureComponentFormat> serializeOrder,
+            List<AdventureComponentFormat> deserializeOrder) {
         builder.addSerializer(Component.class,
-                new ComponentSerializer(serializeOrder, deserializeOrder));
-        builder.addSerializer(Key.class, new KeySerializer());
-        builder.addSerializer(Sound.class, new SoundSerializer());
+                new AdventureComponentSerializer(serializeOrder, deserializeOrder));
+        builder.addSerializer(Key.class, new AdventureKeySerializer());
+        builder.addSerializer(Sound.class, new AdventureSoundSerializer());
         return builder;
     }
 }

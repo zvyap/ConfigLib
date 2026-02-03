@@ -7,25 +7,25 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class KeySerializerTest {
+class AdventureKeySerializerTest {
 
     @Test
     void testSerialize() {
-        KeySerializer serializer = new KeySerializer();
+        AdventureKeySerializer serializer = new AdventureKeySerializer();
         Key key = Key.key("namespace", "value");
         assertEquals("namespace:value", serializer.serialize(key));
     }
 
     @Test
     void testDeserializeWithColon() {
-        KeySerializer serializer = new KeySerializer();
+        AdventureKeySerializer serializer = new AdventureKeySerializer();
         Key key = serializer.deserialize("namespace:value");
         assertEquals(Key.key("namespace", "value"), key);
     }
 
     @Test
     void testDeserializeWithoutColonAndNoDefaultNamespace() {
-        KeySerializer serializer = new KeySerializer();
+        AdventureKeySerializer serializer = new AdventureKeySerializer();
         // Adventure default namespace is "minecraft"
         Key key = serializer.deserialize("value");
         assertEquals(Key.key("minecraft", "value"), key);
@@ -33,14 +33,14 @@ class KeySerializerTest {
 
     @Test
     void testDeserializeWithoutColonAndDefaultNamespace() {
-        KeySerializer serializer = new KeySerializer("default");
+        AdventureKeySerializer serializer = new AdventureKeySerializer("default");
         Key key = serializer.deserialize("value");
         assertEquals(Key.key("default", "value"), key);
     }
 
     @Test
     void testDeserializeWithColonAndDefaultNamespace() {
-        KeySerializer serializer = new KeySerializer("default");
+        AdventureKeySerializer serializer = new AdventureKeySerializer("default");
         // Key.key("default", "namespace:value") will throw InvalidKeyException because
         // ':' is not allowed in value
         assertThrows(InvalidKeyException.class, () ->

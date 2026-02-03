@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * <p>
  * Example: {@code "minecraft:entity.player.levelup 1.0 1.0 MASTER"}
  */
-public final class SoundSerializer implements Serializer<Sound, String> {
+public final class AdventureSoundSerializer implements Serializer<Sound, String> {
     /**
      * The delimiter used to separate sound components in the serialized string.
      */
@@ -30,7 +30,7 @@ public final class SoundSerializer implements Serializer<Sound, String> {
      * Creates a new SoundSerializer with the default source set to
      * {@link Sound.Source#MASTER}.
      */
-    public SoundSerializer() {
+    public AdventureSoundSerializer() {
         this.defaultSource = Sound.Source.MASTER;
     }
 
@@ -39,7 +39,7 @@ public final class SoundSerializer implements Serializer<Sound, String> {
      *
      * @param defaultSource the default sound source to use when deserializing
      */
-    public SoundSerializer(Sound.Source defaultSource) {
+    public AdventureSoundSerializer(Sound.Source defaultSource) {
         Objects.requireNonNull(defaultSource, "defaultSource must not be null");
         this.defaultSource = defaultSource;
     }

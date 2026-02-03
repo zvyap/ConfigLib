@@ -37,25 +37,25 @@ class AdventureComponentTests {
 
     @Test
     void testMultipleFormats() {
-        List<ComponentFormat> baseFormats = new ArrayList<>(List.of(
-                ComponentFormat.MINI_MESSAGE,
-                ComponentFormat.MINECRAFT_JSON,
-                ComponentFormat.LEGACY_AMPERSAND,
-                ComponentFormat.LEGACY_SECTION));
+        List<AdventureComponentFormat> baseFormats = new ArrayList<>(List.of(
+                AdventureComponentFormat.MINI_MESSAGE,
+                AdventureComponentFormat.MINECRAFT_JSON,
+                AdventureComponentFormat.LEGACY_AMPERSAND,
+                AdventureComponentFormat.LEGACY_SECTION));
 
-        List<List<ComponentFormat>> allPermutations = generatePermutations(baseFormats);
+        List<List<AdventureComponentFormat>> allPermutations = generatePermutations(baseFormats);
 
-        for (List<ComponentFormat> deserializeOrder : allPermutations) {
+        for (List<AdventureComponentFormat> deserializeOrder : allPermutations) {
             runTestWithOrder(deserializeOrder);
         }
     }
 
-    private void runTestWithOrder(List<ComponentFormat> deserializeOrder) {
+    private void runTestWithOrder(List<AdventureComponentFormat> deserializeOrder) {
         YamlConfigurationProperties.Builder<?> builder = YamlConfigurationProperties
                 .newBuilder();
         // Set a fixed serialize order, we are testing deserialization.
         AdventureConfigLib.addDefaults(builder,
-                List.of(ComponentFormat.MINI_MESSAGE), deserializeOrder);
+                List.of(AdventureComponentFormat.MINI_MESSAGE), deserializeOrder);
         YamlConfigurationProperties properties = builder.build();
 
         YamlConfigurationStore<MixedConfiguration> store = new YamlConfigurationStore<>(

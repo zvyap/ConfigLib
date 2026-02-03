@@ -7,7 +7,7 @@ import java.util.OptionalInt;
 /**
  * Serializer for Adventure {@link Key} objects.
  */
-public final class KeySerializer implements Serializer<Key, String> {
+public final class AdventureKeySerializer implements Serializer<Key, String> {
 
     private final String defaultNamespace;
 
@@ -18,7 +18,7 @@ public final class KeySerializer implements Serializer<Key, String> {
      *                         without a namespace
      * @throws IllegalArgumentException if the namespace is invalid
      */
-    public KeySerializer(String defaultNamespace) {
+    public AdventureKeySerializer(String defaultNamespace) {
         this.defaultNamespace = defaultNamespace;
         OptionalInt result = Key.checkNamespace(defaultNamespace);
         if (result.isPresent()) {
@@ -31,7 +31,7 @@ public final class KeySerializer implements Serializer<Key, String> {
     /**
      * Creates a new KeySerializer using Adventure's default namespace (minecraft).
      */
-    public KeySerializer() {
+    public AdventureKeySerializer() {
         this.defaultNamespace = null; // Use Adventure's default namespace
     }
 
