@@ -98,10 +98,11 @@ public final class AdventureSoundSerializer implements Serializer<Sound, String>
                 .map(Enum::name)
                 .collect(Collectors.joining("|"));
 
+        String deliminator = Pattern.quote(DELIMINATOR);
         return "^(?<key>[a-zA-Z0-9:._-]+)" +
-                "(?:\\s+(?<pitch>\\d+(?:\\.\\d+)?))?" +
-                "(?:\\s+(?<volume>\\d+(?:\\.\\d+)?))?" +
-                "(?:\\s+(?<source>" + sourcePart + "))?" +
-                "\\s*$";
+                "(?:" + deliminator + "+(?<pitch>\\d+(?:\\.\\d+)?))?" +
+                "(?:" + deliminator + "+(?<volume>\\d+(?:\\.\\d+)?))?" +
+                "(?:" + deliminator + "+(?<source>" + sourcePart + "))?" +
+                deliminator + "*$";
     }
 }
