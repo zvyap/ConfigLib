@@ -20,7 +20,7 @@ public final class AdventureSoundSerializer implements Serializer<Sound, String>
     /**
      * The delimiter used to separate sound components in the serialized string.
      */
-    public static final String DELIMINATOR = " ";
+    public static final String DELIMITER = " ";
 
     private static final Pattern SOUND_PATTERN = Pattern.compile(buildRegex());
 
@@ -48,14 +48,14 @@ public final class AdventureSoundSerializer implements Serializer<Sound, String>
     public String serialize(Sound element) {
         StringBuilder builder = new StringBuilder(element.name().asString());
         if (element.source() != defaultSource) {
-            builder.append(DELIMINATOR).append(formatFloatSimple(element.pitch()));
-            builder.append(DELIMINATOR).append(formatFloatSimple(element.volume()));
-            builder.append(DELIMINATOR).append(element.source().name());
+            builder.append(DELIMITER).append(formatFloatSimple(element.pitch()));
+            builder.append(DELIMITER).append(formatFloatSimple(element.volume()));
+            builder.append(DELIMITER).append(element.source().name());
         } else if (element.volume() != 1f) {
-            builder.append(DELIMINATOR).append(formatFloatSimple(element.pitch()));
-            builder.append(DELIMINATOR).append(formatFloatSimple(element.volume()));
+            builder.append(DELIMITER).append(formatFloatSimple(element.pitch()));
+            builder.append(DELIMITER).append(formatFloatSimple(element.volume()));
         } else if (element.pitch() != 1f) {
-            builder.append(DELIMINATOR).append(formatFloatSimple(element.pitch()));
+            builder.append(DELIMITER).append(formatFloatSimple(element.pitch()));
         }
 
         return builder.toString();
@@ -98,7 +98,7 @@ public final class AdventureSoundSerializer implements Serializer<Sound, String>
                 .map(Enum::name)
                 .collect(Collectors.joining("|"));
 
-        String deliminator = Pattern.quote(DELIMINATOR);
+        String deliminator = Pattern.quote(DELIMITER);
         return "^(?<key>[a-zA-Z0-9:._-]+)" +
                 "(?:" + deliminator + "+(?<pitch>\\d+(?:\\.\\d+)?))?" +
                 "(?:" + deliminator + "+(?<volume>\\d+(?:\\.\\d+)?))?" +

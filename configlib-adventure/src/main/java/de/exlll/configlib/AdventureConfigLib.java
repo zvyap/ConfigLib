@@ -27,8 +27,7 @@ public final class AdventureConfigLib {
      * @return the builder with default serializers added
      */
     public static <B extends ConfigurationProperties.Builder<B>>
-        ConfigurationProperties.Builder<B> addDefaults(
-                ConfigurationProperties.Builder<B> builder) {
+        ConfigurationProperties.Builder<B> addDefaults(B builder) {
         return addDefaults(builder, DEFAULT_FORMAT_ORDER, DEFAULT_FORMAT_ORDER);
     }
 
@@ -46,9 +45,9 @@ public final class AdventureConfigLib {
      */
     public static <B extends ConfigurationProperties.Builder<B>>
         ConfigurationProperties.Builder<B> addDefaults(
-            ConfigurationProperties.Builder<B> builder,
-            List<AdventureComponentFormat> serializeOrder,
-            List<AdventureComponentFormat> deserializeOrder) {
+                B builder,
+                List<AdventureComponentFormat> serializeOrder,
+                List<AdventureComponentFormat> deserializeOrder) {
         builder.addSerializer(Component.class,
                 new AdventureComponentSerializer(serializeOrder, deserializeOrder));
         builder.addSerializer(Key.class, new AdventureKeySerializer());
