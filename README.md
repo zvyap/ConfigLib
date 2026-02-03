@@ -422,7 +422,7 @@ YamlConfigurationProperties properties = builder.build();
 
 ##### Component Formats
 
-The `ComponentSerializer` supports multiple text formats through the `ComponentFormat` enum:
+The `AdventureComponentSerializer` supports multiple text formats through the `AdventureComponentFormat` enum:
 
 | Format              | Description                                        | Example                            |
 |---------------------|----------------------------------------------------|------------------------------------|
@@ -435,10 +435,10 @@ The `ComponentSerializer` supports multiple text formats through the `ComponentF
 You can customize the serialization and deserialization format order:
 
 ```java
-List<ComponentFormat> serializeOrder = List.of(ComponentFormat.MINI_MESSAGE);
-List<ComponentFormat> deserializeOrder = List.of(
-        ComponentFormat.MINI_MESSAGE,
-        ComponentFormat.LEGACY_AMPERSAND
+List<AdventureComponentFormat> serializeOrder = List.of(AdventureComponentFormat.MINI_MESSAGE);
+List<AdventureComponentFormat> deserializeOrder = List.of(
+        AdventureComponentFormat.MINI_MESSAGE,
+        AdventureComponentFormat.LEGACY_AMPERSAND
 );
 AdventureConfigLib.addDefaults(builder, serializeOrder, deserializeOrder);
 ```
