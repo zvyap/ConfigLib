@@ -2,10 +2,13 @@ package de.exlll.configlib;
 
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Serializer for {@link Sound} objects.
@@ -17,6 +20,8 @@ import java.util.regex.Pattern;
 public final class SoundSerializer implements Serializer<Sound, String> {
     /** The delimiter used to separate sound components in the serialized string. */
     public static final String DELIMINATOR = " ";
+
+    private static final Pattern SOUND_PATTERN = Pattern.compile(buildRegex());
 
     private final Sound.Source defaultSource;
 
@@ -55,13 +60,6 @@ public final class SoundSerializer implements Serializer<Sound, String> {
         return builder.toString();
     }
 
-    private static final Pattern SOUND_PATTERN = Pattern.compile(
-            "^(?<key>[a-zA-Z0-9:._-]+)" +
-                    "(?:\\s+(?<pitch>\\d+(?:\\.\\d+)?))?" +
-                    "(?:\\s+(?<volume>\\d+(?:\\.\\d+)?))?" +
-                    "(?:\\s+(?<source>MASTER|MUSIC|RECORD|WEATHER|BLOCK|HOSTILE|NEUTRAL|PLAYER|AMBIENT|VOICE))?" +
-                    "\\s*$");
-
     @Override
     public Sound deserialize(String element) {
         Matcher matcher = SOUND_PATTERN.matcher(element);
@@ -91,5 +89,18 @@ public final class SoundSerializer implements Serializer<Sound, String> {
     private static String formatFloatSimple(float value) {
         String s = String.valueOf(value);
         return s.endsWith(".0") ? s.substring(0, s.length() - 2) : s;
+    }
+
+    private static String buildRegex() {
+        // Dynamic generate source part to avoid any future Minecraft or Adventure update
+        String sourcePart = Arrays.stream(Sound.Source.values())
+                .map(Enum::name)
+                .collect(Collectors.joining("|"));
+
+        return "^(?<key>[a-zA-Z0-9:._-]+)" +
+                "(?:\\s+(?<pitch>\\d+(?:\\.\\d+)?))?" +
+                "(?:\\s+(?<volume>\\d+(?:\\.\\d+)?))?" +
+                "(?:\\s+(?<source>" + sourcePart + "))?" +
+                "\\s*$";
     }
 }
