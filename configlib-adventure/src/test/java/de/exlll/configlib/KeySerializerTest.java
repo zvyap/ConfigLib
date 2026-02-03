@@ -1,5 +1,6 @@
 package de.exlll.configlib;
 
+import net.kyori.adventure.key.InvalidKeyException;
 import net.kyori.adventure.key.Key;
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +43,6 @@ class KeySerializerTest {
         KeySerializer serializer = new KeySerializer("default");
         // Key.key("default", "namespace:value") will throw InvalidKeyException because
         // ':' is not allowed in value
-        assertThrows(Exception.class, () -> serializer.deserialize("namespace:value"));
+        assertThrows(InvalidKeyException.class, () -> serializer.deserialize("namespace:value"));
     }
 }

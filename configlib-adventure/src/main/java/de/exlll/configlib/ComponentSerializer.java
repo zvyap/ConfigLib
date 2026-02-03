@@ -24,7 +24,7 @@ public final class ComponentSerializer implements Serializer<Component, String> 
      * @param deserializeOrder the order of formats to try when deserializing
      */
     public ComponentSerializer(List<ComponentFormat> serializeOrder, List<ComponentFormat> deserializeOrder) {
-        this.serializeOrder  = List.copyOf(serializeOrder);
+        this.serializeOrder = List.copyOf(serializeOrder);
         this.deserializeOrder = List.copyOf(deserializeOrder);
     }
 
@@ -39,17 +39,12 @@ public final class ComponentSerializer implements Serializer<Component, String> 
 
     @Override
     public String serialize(Component element) {
-        if (element == null){
+        if (element == null) {
             return null;
         }
 
         for (ComponentFormat format : serializeOrder) {
-            try {
-                return serialize(element, format);
-            } catch (Exception ignored) {
-                // This should never happen, but in case of adventure library issue
-                ignored.printStackTrace();
-            }
+            return serialize(element, format);
         }
 
         // Fallback to MiniMessage
@@ -58,7 +53,7 @@ public final class ComponentSerializer implements Serializer<Component, String> 
 
     @Override
     public Component deserialize(String element) {
-        if (element == null){
+        if (element == null) {
             return null;
         }
 
@@ -67,12 +62,7 @@ public final class ComponentSerializer implements Serializer<Component, String> 
                 continue;
             }
 
-            try {
-                return deserialize(element, format);
-            } catch (Exception ignored) {
-                // This should never happen, but in case of adventure library issue
-                ignored.printStackTrace();
-            }
+            return deserialize(element, format);
         }
 
         // Fallback to MiniMessage
@@ -86,7 +76,6 @@ public final class ComponentSerializer implements Serializer<Component, String> 
             case LEGACY_SECTION -> LegacyComponentSerializer.legacySection().serialize(component);
             case MINECRAFT_JSON -> GsonComponentSerializer.gson().serialize(component);
             case TRANSLATION_KEY -> PlainTextComponentSerializer.plainText().serialize(component);
-            default -> throw new UnsupportedOperationException("Unsupported format for serialization: " + format);
         };
     }
 
@@ -97,7 +86,6 @@ public final class ComponentSerializer implements Serializer<Component, String> 
             case LEGACY_SECTION -> LegacyComponentSerializer.legacySection().deserialize(string);
             case MINECRAFT_JSON -> GsonComponentSerializer.gson().deserialize(string);
             case TRANSLATION_KEY -> Component.translatable(string);
-            default -> throw new UnsupportedOperationException("Unsupported format for deserialization: " + format);
         };
     }
 }

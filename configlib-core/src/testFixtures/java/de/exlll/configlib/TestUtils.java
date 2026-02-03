@@ -350,9 +350,7 @@ public final class TestUtils {
         path declarations to fulfill the non-unix system's needs.
     */
     public static String createPlatformSpecificFilePath(String path) {
-        final String platform = System.getProperty("os.name");
-
-        if (!platform.contains("Windows")) return path;
+        if (!isWindows()) return path;
 
         return String.format("C:%s", path.replace("/", File.separator));
     }

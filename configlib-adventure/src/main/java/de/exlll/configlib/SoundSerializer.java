@@ -3,6 +3,10 @@ package de.exlll.configlib;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Serializer for {@link Sound} objects.
  * <p>
@@ -30,13 +34,14 @@ public final class SoundSerializer implements Serializer<Sound, String> {
      * @param defaultSource the default sound source to use when deserializing
      */
     public SoundSerializer(Sound.Source defaultSource) {
+        Objects.requireNonNull(defaultSource, "defaultSource must not be null");
         this.defaultSource = defaultSource;
     }
 
     @Override
     public String serialize(Sound element) {
         StringBuilder builder = new StringBuilder(element.name().asString());
-        if (element.source() != null) {
+        if (element.source() != defaultSource) {
             builder.append(DELIMINATOR).append(formatFloatSimple(element.pitch()));
             builder.append(DELIMINATOR).append(formatFloatSimple(element.volume()));
             builder.append(DELIMINATOR).append(element.source().name());
@@ -50,67 +55,36 @@ public final class SoundSerializer implements Serializer<Sound, String> {
         return builder.toString();
     }
 
+    private static final Pattern SOUND_PATTERN = Pattern.compile(
+            "^(?<key>[a-zA-Z0-9:._-]+)" +
+                    "(?:\\s+(?<pitch>\\d+(?:\\.\\d+)?))?" +
+                    "(?:\\s+(?<volume>\\d+(?:\\.\\d+)?))?" +
+                    "(?:\\s+(?<source>MASTER|MUSIC|RECORD|WEATHER|BLOCK|HOSTILE|NEUTRAL|PLAYER|AMBIENT|VOICE))?" +
+                    "\\s*$");
+
     @Override
     public Sound deserialize(String element) {
-        String[] parts = element.split(DELIMINATOR);
-        float pitch = 1.0f;
-        float volume = 1.0f;
-        Sound.Source source = defaultSource;
-
-        int endIndex = parts.length - 1;
-
-        // Try to parse source
-        if (endIndex >= 0) {
-            try {
-                source = Sound.Source.valueOf(parts[endIndex]);
-                endIndex--;
-            } catch (IllegalArgumentException ignored) {
-            }
+        Matcher matcher = SOUND_PATTERN.matcher(element);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Invalid sound format: " + element);
         }
 
-        // Try to parse volume and pitch
-        if (endIndex >= 0) {
-            Float lastFloat = tryParseFloat(parts[endIndex]);
-            if (lastFloat != null) {
-                boolean hasSecondFloat = false;
-                if (endIndex > 0) {
-                    Float secondLastFloat = tryParseFloat(parts[endIndex - 1]);
-                    if (secondLastFloat != null) {
-                        volume = lastFloat;
-                        pitch = secondLastFloat;
-                        endIndex -= 2;
-                        hasSecondFloat = true;
-                    }
-                }
+        String keyString = matcher.group("key");
+        Key key = Key.key(keyString);
 
-                if (!hasSecondFloat) {
-                    pitch = lastFloat;
-                    endIndex--;
-                }
-            }
-        }
+        float pitch = matcher.group("pitch") != null
+                ? Float.parseFloat(matcher.group("pitch"))
+                : 1.0f;
 
-        Key key = buildKey(parts, endIndex);
+        float volume = matcher.group("volume") != null
+                ? Float.parseFloat(matcher.group("volume"))
+                : 1.0f;
+
+        Sound.Source source = matcher.group("source") != null
+                ? Sound.Source.valueOf(matcher.group("source"))
+                : defaultSource;
+
         return Sound.sound(key, source, volume, pitch);
-    }
-
-    private Float tryParseFloat(String s) {
-        try {
-            return Float.parseFloat(s);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
-
-    private Key buildKey(String[] parts, int endIndex) {
-        StringBuilder keyString = new StringBuilder();
-        for (int i = 0; i <= endIndex; i++) {
-            keyString.append(parts[i]);
-            if (i < endIndex) {
-                keyString.append(DELIMINATOR);
-            }
-        }
-        return Key.key(keyString.toString());
     }
 
     // If the float is a whole number, remove the decimal part for simplicity

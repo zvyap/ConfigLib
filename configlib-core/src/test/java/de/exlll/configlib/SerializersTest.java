@@ -1216,7 +1216,7 @@ class SerializersTest {
 
             assertThrowsConfigurationException(
                     () -> serializer.deserialize(new File(TMP_CONFIG_PATH)),
-                    buildExceptionMessage("File", TestUtils.isWindows() ? "C:\\tmp\\config.yml" : "/tmp/config.yml",
+                    buildExceptionMessage("File", TestUtils.createPlatformSpecificFilePath("/tmp/config.yml"),
                             "OBJECT_TO_STRING")
             );
 
@@ -1277,7 +1277,7 @@ class SerializersTest {
 
             assertThat(
                     serializer.deserialize(new File(TMP_CONFIG_PATH)),
-                    is(TestUtils.isWindows() ? "C:\\tmp\\config.yml" : "/tmp/config.yml")
+                    is(TestUtils.createPlatformSpecificFilePath("/tmp/config.yml"))
             );
             assertThat(
                     serializer.deserialize(URI.create("https://example.com")),
