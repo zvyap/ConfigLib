@@ -2,6 +2,7 @@ package de.exlll.configlib;
 
 import com.google.common.jimfs.Jimfs;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static de.exlll.configlib.TestUtils.createPlatformSpecificFilePath;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AdventureComponentTests {
     private FileSystem fs;
@@ -33,6 +34,39 @@ class AdventureComponentTests {
         if (fs != null) {
             fs.close();
         }
+    }
+
+    @Test
+    void testTranslatableComponentRoundTrip() {
+        AdventureComponentSerializer serializer = new AdventureComponentSerializer(
+                AdventureComponentFormat.TRANSLATION_KEY);
+
+        TranslatableComponent original = Component.translatable("item.minecraft.diamond_sword");
+        TranslatableComponent originalWithDefaultMessage = Component.translatable(
+                "item.minecraft.diamond_sword",
+                "Default Message");
+
+        String serialized = serializer.serialize(original);
+
+        String serializedWithDefaultMessage =
+                serializer.serialize(originalWithDefaultMessage);
+
+        // Deserialize and validate returned TranslatableComponent
+        TranslatableComponent deserialized =
+                assertInstanceOf(TranslatableComponent.class,
+                        serializer.deserialize(serialized));
+        TranslatableComponent deserializedWithDefaultMessage =
+                assertInstanceOf(TranslatableComponent.class,
+                        serializer.deserialize(serializedWithDefaultMessage));
+
+        // Basic round-trip equality check
+        assertEquals(original, deserialized,
+                "Deserialized component does not match the original");
+
+        // The default message should not be preserved in this format
+        assertNotEquals(originalWithDefaultMessage, deserializedWithDefaultMessage,
+                "Deserialized component should not match the original with default message");
+        assertEquals(originalWithDefaultMessage.key(), deserializedWithDefaultMessage.key());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package de.exlll.configlib;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -81,19 +82,24 @@ public final class AdventureComponentSerializer implements Serializer<Component,
                     LegacyComponentSerializer.legacySection().serialize(component);
             case MINECRAFT_JSON -> GsonComponentSerializer.gson().serialize(component);
             case TRANSLATION_KEY ->
-                    PlainTextComponentSerializer.plainText().serialize(component);
+                    component instanceof TranslatableComponent translatableComponent
+                            ? translatableComponent.key()
+                            : PlainTextComponentSerializer.plainText().serialize(component);
         };
     }
 
     private Component deserialize(String string, AdventureComponentFormat format) {
         return switch (format) {
-            case MINI_MESSAGE -> MiniMessage.miniMessage().deserialize(string);
+            case MINI_MESSAGE ->
+                    MiniMessage.miniMessage().deserialize(string);
             case LEGACY_AMPERSAND ->
                     LegacyComponentSerializer.legacyAmpersand().deserialize(string);
             case LEGACY_SECTION ->
                     LegacyComponentSerializer.legacySection().deserialize(string);
-            case MINECRAFT_JSON -> GsonComponentSerializer.gson().deserialize(string);
-            case TRANSLATION_KEY -> Component.translatable(string);
+            case MINECRAFT_JSON ->
+                    GsonComponentSerializer.gson().deserialize(string);
+            case TRANSLATION_KEY ->
+                    Component.translatable(string);
         };
     }
 }
