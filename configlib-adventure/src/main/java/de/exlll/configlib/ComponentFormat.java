@@ -27,10 +27,10 @@ public enum ComponentFormat {
     // Hack to avoid compiler error while singleton pattern initialization
     private static class Patterns {
         // Pattern to detect any <tag> in a string
-        static final Pattern MINI_MESSAGE_PATTERN = Pattern.compile("<[^>]+>");
+        static final Pattern MINI_MESSAGE_PATTERN = Pattern.compile("<[a-zA-Z0-9_:-]+(?::[^<>]+)?>");
     }
 
-    private Predicate<String> inputPredicate;
+    private final Predicate<String> inputPredicate;
 
     ComponentFormat(Predicate<String> inputPredicate) {
         this.inputPredicate = inputPredicate;
