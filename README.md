@@ -445,7 +445,7 @@ AdventureConfigLib.addDefaults(builder, serializeOrder, deserializeOrder);
 
 ##### Sound Serialization
 
-Sounds are serialized in a compact string format: `<sound_id> [pitch] volume source`.
+Sounds are serialized in a compact string format: `<sound_id> [pitch] [volume] [source]`.
 Sound id can be anything even it is not in vanilla Minecraft to support custom sound from texture packs.
 ```yaml
 # Full format
