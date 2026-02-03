@@ -19,8 +19,9 @@ public final class ConfigLib extends JavaPlugin {
             initializeBukkitDefaultProperties();
 
     /**
-     * A {@code YamlConfigurationProperties} object design for Paper software, it provides native support for Adventure library,
-     * serializers classes like {@link  ItemStack} and other {@link ConfigurationSerializable} types.
+     * A {@code YamlConfigurationProperties} object designed for the Paper platform. It provides
+     * native support for the Adventure library and serializer classes for types like
+     * {@link ItemStack} and other {@link ConfigurationSerializable} implementations.
      * <p>
      * You can configure these properties further by creating a new builder using the
      * {@code toBuilder()} method of this object.
