@@ -14,7 +14,7 @@ public final class AdventureConfigLib {
     // component type
     private static final List<AdventureComponentFormat> DEFAULT_FORMAT_ORDER = List.of(
             AdventureComponentFormat.MINI_MESSAGE
-    );
+        );
 
     private AdventureConfigLib() {
     }
@@ -26,10 +26,10 @@ public final class AdventureConfigLib {
      * @param <B>     the builder type
      * @return the builder with default serializers added
      */
-    public static <B extends ConfigurationProperties.Builder<B>>
+    public static <B extends ConfigurationProperties.Builder<B>> 
     ConfigurationProperties.Builder<B> addDefaults(
             ConfigurationProperties.Builder<B> builder) {
-        return addDefaults(builder, DEFAULT_FORMAT_ORDER, DEFAULT_FORMAT_ORDER);
+        return addDefaults(builder, DEFAULT_FORMAT_ORDER.get(0), DEFAULT_FORMAT_ORDER);
     }
 
     /**
@@ -37,20 +37,20 @@ public final class AdventureConfigLib {
      * format orders.
      *
      * @param builder          the configuration properties builder
-     * @param serializeOrder   the order of formats to try when serializing
+     * @param serializeFormat  the format to use when serializing
      *                         components
      * @param deserializeOrder the order of formats to try when deserializing
      *                         components
      * @param <B>              the builder type
      * @return the builder with default serializers added
      */
-    public static <B extends ConfigurationProperties.Builder<B>>
+    public static <B extends ConfigurationProperties.Builder<B>> 
     ConfigurationProperties.Builder<B> addDefaults(
             ConfigurationProperties.Builder<B> builder,
-            List<AdventureComponentFormat> serializeOrder,
+            AdventureComponentFormat serializeFormat,
             List<AdventureComponentFormat> deserializeOrder) {
         builder.addSerializer(Component.class,
-                new AdventureComponentSerializer(serializeOrder, deserializeOrder));
+                new AdventureComponentSerializer(serializeFormat, deserializeOrder));
         builder.addSerializer(Key.class, new AdventureKeySerializer());
         builder.addSerializer(Sound.class, new AdventureSoundSerializer());
         return builder;

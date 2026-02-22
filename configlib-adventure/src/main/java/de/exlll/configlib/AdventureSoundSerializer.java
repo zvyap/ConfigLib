@@ -3,11 +3,9 @@ package de.exlll.configlib;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 
-import java.util.Arrays;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Serializer for {@link Sound} objects.
@@ -79,9 +77,15 @@ public final class AdventureSoundSerializer implements Serializer<Sound, String>
                 ? Float.parseFloat(matcher.group("volume"))
                 : 1.0f;
 
-        Sound.Source source = matcher.group("source") != null
-                ? Sound.Source.valueOf(matcher.group("source"))
-                : defaultSource;
+        Sound.Source source = defaultSource;
+        if (matcher.group("source") != null) {
+            String sourceName = matcher.group("source");
+            try {
+                source = Sound.Source.valueOf(sourceName.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new ConfigurationException("Invalid sound source '" + sourceName + "' in: " + element);
+            }
+        }
 
         return Sound.sound(key, source, volume, pitch);
     }
@@ -93,16 +97,11 @@ public final class AdventureSoundSerializer implements Serializer<Sound, String>
     }
 
     private static String buildRegex() {
-        // Dynamic generate source part to avoid any future Minecraft or Adventure update
-        String sourcePart = Arrays.stream(Sound.Source.values())
-                .map(Enum::name)
-                .collect(Collectors.joining("|"));
-
         String deliminator = Pattern.quote(DELIMITER);
         return "^(?<key>[a-zA-Z0-9:._-]+)" +
                 "(?:" + deliminator + "+(?<pitch>\\d+(?:\\.\\d+)?))?" +
                 "(?:" + deliminator + "+(?<volume>\\d+(?:\\.\\d+)?))?" +
-                "(?:" + deliminator + "+(?<source>" + sourcePart + "))?" +
+                "(?:" + deliminator + "+(?<source>[a-zA-Z_]+))?" +
                 deliminator + "*$";
     }
 }

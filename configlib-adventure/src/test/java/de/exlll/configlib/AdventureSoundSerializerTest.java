@@ -93,4 +93,19 @@ class AdventureSoundSerializerTest {
         assertEquals(original.volume(), deserialized.volume());
         assertEquals(original.pitch(), deserialized.pitch());
     }
+
+    @Test
+    void testDeserializeInvalidSourceThrowsConfigurationException() {
+        String input = "minecraft:test" + AdventureSoundSerializer.DELIMITER + "1.0"
+                + AdventureSoundSerializer.DELIMITER + "1.0"
+                + AdventureSoundSerializer.DELIMITER + "INVALID_SOURCE";
+
+        ConfigurationException exception = org.junit.jupiter.api.Assertions.assertThrows(
+                ConfigurationException.class,
+                () -> serializer.deserialize(input));
+
+        org.junit.jupiter.api.Assertions.assertTrue(
+                exception.getMessage().contains("Invalid sound source 'INVALID_SOURCE'"),
+                "Exception message should mention the invalid source");
+    }
 }

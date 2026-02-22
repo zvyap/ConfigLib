@@ -15,19 +15,19 @@ import java.util.List;
  * Supports multiple formats including MiniMessage, legacy, and JSON.
  */
 public final class AdventureComponentSerializer implements Serializer<Component, String> {
-    private final List<AdventureComponentFormat> serializeOrder;
+    private final AdventureComponentFormat serializeFormat;
     private final List<AdventureComponentFormat> deserializeOrder;
 
     /**
      * Creates a new ComponentSerializer with separate format orders for
      * serialization and deserialization.
      *
-     * @param serializeOrder   the order of formats to try when serializing
+     * @param serializeFormat  the format to use when serializing
      * @param deserializeOrder the order of formats to try when deserializing
      */
-    public AdventureComponentSerializer(List<AdventureComponentFormat> serializeOrder,
-                                        List<AdventureComponentFormat> deserializeOrder) {
-        this.serializeOrder = List.copyOf(serializeOrder);
+    public AdventureComponentSerializer(AdventureComponentFormat serializeFormat,
+            List<AdventureComponentFormat> deserializeOrder) {
+        this.serializeFormat = serializeFormat;
         this.deserializeOrder = List.copyOf(deserializeOrder);
     }
 
@@ -35,10 +35,15 @@ public final class AdventureComponentSerializer implements Serializer<Component,
      * Creates a new ComponentSerializer using the same format order for
      * both serialization and deserialization.
      *
-     * @param formats the formats to use, in order of preference
+     * @param serializeFormat    the format to use for serialization
+     * @param deserializeFormats the formats to use for deserialization, in order of
+     *                           preference
      */
-    public AdventureComponentSerializer(AdventureComponentFormat... formats) {
-        this(Arrays.asList(formats), Arrays.asList(formats));
+    public AdventureComponentSerializer(AdventureComponentFormat serializeFormat,
+            AdventureComponentFormat... deserializeFormats) {
+        this(serializeFormat, deserializeFormats.length == 0
+                ? List.of(serializeFormat)
+                : Arrays.asList(deserializeFormats));
     }
 
     @Override
@@ -47,12 +52,7 @@ public final class AdventureComponentSerializer implements Serializer<Component,
             return null;
         }
 
-        for (AdventureComponentFormat format : serializeOrder) {
-            return serialize(element, format);
-        }
-
-        // Fallback to MiniMessage
-        return MiniMessage.miniMessage().serialize(element);
+        return serialize(element, serializeFormat);
     }
 
     @Override
@@ -77,29 +77,29 @@ public final class AdventureComponentSerializer implements Serializer<Component,
         return switch (format) {
             case MINI_MESSAGE -> MiniMessage.miniMessage().serialize(component);
             case LEGACY_AMPERSAND ->
-                    LegacyComponentSerializer.legacyAmpersand().serialize(component);
+                LegacyComponentSerializer.legacyAmpersand().serialize(component);
             case LEGACY_SECTION ->
-                    LegacyComponentSerializer.legacySection().serialize(component);
+                LegacyComponentSerializer.legacySection().serialize(component);
             case MINECRAFT_JSON -> GsonComponentSerializer.gson().serialize(component);
             case TRANSLATION_KEY ->
-                    component instanceof TranslatableComponent translatableComponent
-                            ? translatableComponent.key()
-                            : PlainTextComponentSerializer.plainText().serialize(component);
+                component instanceof TranslatableComponent translatableComponent
+                        ? translatableComponent.key()
+                        : PlainTextComponentSerializer.plainText().serialize(component);
         };
     }
 
     private Component deserialize(String string, AdventureComponentFormat format) {
         return switch (format) {
             case MINI_MESSAGE ->
-                    MiniMessage.miniMessage().deserialize(string);
+                MiniMessage.miniMessage().deserialize(string);
             case LEGACY_AMPERSAND ->
-                    LegacyComponentSerializer.legacyAmpersand().deserialize(string);
+                LegacyComponentSerializer.legacyAmpersand().deserialize(string);
             case LEGACY_SECTION ->
-                    LegacyComponentSerializer.legacySection().deserialize(string);
+                LegacyComponentSerializer.legacySection().deserialize(string);
             case MINECRAFT_JSON ->
-                    GsonComponentSerializer.gson().deserialize(string);
+                GsonComponentSerializer.gson().deserialize(string);
             case TRANSLATION_KEY ->
-                    Component.translatable(string);
+                Component.translatable(string);
         };
     }
 }

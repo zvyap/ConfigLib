@@ -48,16 +48,13 @@ class AdventureComponentTests {
 
         String serialized = serializer.serialize(original);
 
-        String serializedWithDefaultMessage =
-                serializer.serialize(originalWithDefaultMessage);
+        String serializedWithDefaultMessage = serializer.serialize(originalWithDefaultMessage);
 
         // Deserialize and validate returned TranslatableComponent
-        TranslatableComponent deserialized =
-                assertInstanceOf(TranslatableComponent.class,
-                        serializer.deserialize(serialized));
-        TranslatableComponent deserializedWithDefaultMessage =
-                assertInstanceOf(TranslatableComponent.class,
-                        serializer.deserialize(serializedWithDefaultMessage));
+        TranslatableComponent deserialized = assertInstanceOf(TranslatableComponent.class,
+                serializer.deserialize(serialized));
+        TranslatableComponent deserializedWithDefaultMessage = assertInstanceOf(TranslatableComponent.class,
+                serializer.deserialize(serializedWithDefaultMessage));
 
         // Basic round-trip equality check
         assertEquals(original, deserialized,
@@ -89,7 +86,7 @@ class AdventureComponentTests {
                 .newBuilder();
         // Set a fixed serialize order, we are testing deserialization.
         AdventureConfigLib.addDefaults(builder,
-                List.of(AdventureComponentFormat.MINI_MESSAGE), deserializeOrder);
+                AdventureComponentFormat.MINI_MESSAGE, deserializeOrder);
         YamlConfigurationProperties properties = builder.build();
 
         YamlConfigurationStore<MixedConfiguration> store = new YamlConfigurationStore<>(
